@@ -37,6 +37,7 @@ export function SignUpForm() {
       await updateProfile(userCredential.user, {
         displayName: values.name,
       });
+      // Ensure we push to router only after all auth operations are complete.
       router.push('/dashboard');
     } catch (error: any) {
       toast({
