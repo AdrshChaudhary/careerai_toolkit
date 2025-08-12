@@ -17,7 +17,7 @@ const AnalyzeResumeInputSchema = z.object({
 export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
 const AnalyzeResumeOutputSchema = z.object({
-  atsScore: z.number().describe('An overall ATS score for the resume (0-100). Only generate if a job description is provided.'),
+  atsScore: z.number().describe('An overall ATS score for the resume (0-100). Only generate if a job description is provided, otherwise return 0.'),
   summaryFeedback: z.string().describe('Feedback on the resume summary section.'),
   skillsFeedback: z.string().describe('Feedback on the resume skills section.'),
   experienceFeedback: z.string().describe('Feedback on the resume experience section.'),
@@ -63,6 +63,12 @@ const analyzeResumeFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error("Failed to get analysis from AI.");
+    }
+    if (!input.jobDescription) {
+        output.atsScore = 0;
+    }
+    return output;
   }
 );

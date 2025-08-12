@@ -19,173 +19,185 @@ import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import * as pdfjsLib from 'pdfjs-dist';
 import { callAnalyzeResume } from '@/app/dashboard/resume-analyzer/actions';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Set worker path for pdfjs-dist
 if (typeof window !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 }
 
-const formSchema = z.object({
-  analysisMode: z.enum(['comprehensive', 'jobDescription']),
+const comprehensiveSchema = z.object({
   resume: z.any().refine((files) => files?.length == 1, 'Resume PDF is required.'),
-  jobDescription: z.string(),
-}).superRefine((data, ctx) => {
-    if (data.analysisMode === 'jobDescription' && data.jobDescription.length < 50) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['jobDescription'],
-            message: 'Job description must be at least 50 characters.',
-        });
-    }
 });
 
+const jobDescriptionSchema = z.object({
+  resume: z.any().refine((files) => files?.length == 1, 'Resume PDF is required.'),
+  jobDescription: z.string().min(50, 'Job description must be at least 50 characters.'),
+});
 
-type FormValues = z.infer<typeof formSchema>;
+type ComprehensiveFormValues = z.infer<typeof comprehensiveSchema>;
+type JobDescriptionFormValues = z.infer<typeof jobDescriptionSchema>;
+
 
 export function ResumeAnalyzerClient() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeResumeOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('comprehensive');
   const { toast } = useToast();
   const { user } = useAuth();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const comprehensiveForm = useForm<ComprehensiveFormValues>({
+    resolver: zodResolver(comprehensiveSchema),
+  });
+
+  const jobDescriptionForm = useForm<JobDescriptionFormValues>({
+    resolver: zodResolver(jobDescriptionSchema),
     defaultValues: {
-        analysisMode: 'comprehensive',
         jobDescription: '',
     }
   });
 
-  const analysisMode = form.watch('analysisMode');
+  const extractText = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = async (e) => {
+            try {
+                if (!e.target?.result) {
+                    throw new Error("Failed to read file.");
+                }
+                const typedArray = new Uint8Array(e.target.result as ArrayBuffer);
+                const loadingTask = pdfjsLib.getDocument(typedArray);
+                const pdf = await loadingTask.promise;
+                
+                let resumeText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    textContent.items.forEach((item) => {
+                        if ('str' in item) {
+                            resumeText += item.str + ' ';
+                        }
+                    });
+                    resumeText += '\n';
+                }
 
-  async function onSubmit(values: FormValues) {
-    if (!user) {
-      toast({ variant: 'destructive', title: 'You must be logged in.' });
-      return;
-    }
+                if (resumeText.trim().length === 0) {
+                    throw new Error("Could not extract text from PDF. Please ensure it's a text-based PDF.");
+                }
+                resolve(resumeText);
+            } catch (error) {
+                reject(error);
+            }
+        }
+        reader.onerror = () => {
+            reject(new Error('Could not read the resume file.'));
+        }
+    });
+  };
+
+  async function onComprehensiveSubmit(values: ComprehensiveFormValues) {
+    if (!user) return;
     setIsLoading(true);
     setAnalysisResult(null);
-
     try {
-      const file = values.resume[0];
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onload = async (e) => {
-        try {
-          if (!e.target?.result) {
-            throw new Error("Failed to read file.");
-          }
-          const typedArray = new Uint8Array(e.target.result as ArrayBuffer);
-          const loadingTask = pdfjsLib.getDocument(typedArray);
-          const pdf = await loadingTask.promise;
-          
-          let resumeText = '';
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const textContent = await page.getTextContent();
-            textContent.items.forEach((item) => {
-                if ('str' in item) {
-                    resumeText += item.str + ' ';
-                }
-            });
-            resumeText += '\n';
-          }
+      const resumeText = await extractText(values.resume[0]);
+      const result = await callAnalyzeResume({ resumeText }, user.uid);
+      setAnalysisResult(result);
+    } catch (e: any) {
+      toast({ variant: 'destructive', title: 'Error', description: e.message });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-          if (resumeText.trim().length === 0) {
-              throw new Error("Could not extract text from PDF. Please ensure it's a text-based PDF.");
-          }
-
-          const result = await callAnalyzeResume(
-            { 
-              resumeText, 
-              jobDescription: values.analysisMode === 'jobDescription' ? values.jobDescription : undefined
-            },
-            user.uid
-          );
-          setAnalysisResult(result);
-        } catch (error: any) {
-          toast({ variant: 'destructive', title: 'Error Analyzing Resume', description: error.message || 'Could not process PDF file.' });
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      reader.onerror = () => {
-        toast({ variant: 'destructive', title: 'Error Reading File', description: 'Could not read the resume file.' });
-        setIsLoading(false);
-      }
-
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Error', description: error.message });
+  async function onJobDescriptionSubmit(values: JobDescriptionFormValues) {
+    if (!user) return;
+    setIsLoading(true);
+    setAnalysisResult(null);
+    try {
+      const resumeText = await extractText(values.resume[0]);
+      const result = await callAnalyzeResume({ resumeText, jobDescription: values.jobDescription }, user.uid);
+      setAnalysisResult(result);
+    } catch (e: any) {
+      toast({ variant: 'destructive', title: 'Error', description: e.message });
+    } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>Resume Analyzer</CardTitle>
-          <CardDescription>Upload your resume and paste a job description to get an AI-powered analysis.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+     <Tabs defaultValue="comprehensive" onValueChange={setActiveTab} className="w-full">
+      <div className="grid gap-6 md:grid-cols-2">
+      <Card className="md:col-span-1">
+        <TabsList className="grid w-full grid-cols-2 mt-6 mx-auto max-w-[calc(100%-2rem)]">
+            <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
+            <TabsTrigger value="jobDescription">Job Description</TabsTrigger>
+        </TabsList>
+        <TabsContent value="comprehensive" className="m-0">
+          <CardHeader>
+            <CardTitle>Comprehensive Analysis</CardTitle>
+            <CardDescription>Get a general analysis of your resume's strengths and weaknesses.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...comprehensiveForm}>
+              <form onSubmit={comprehensiveForm.handleSubmit(onComprehensiveSubmit)} className="space-y-6">
                 <FormField
-                control={form.control}
-                name="analysisMode"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Analysis Mode</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-col space-y-1"
-                      >
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="comprehensive" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                           Comprehensive Analysis
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="jobDescription" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            Job Description Based
-                          </FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="resume"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Resume PDF</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="application/pdf"
-                        onChange={(e) => field.onChange(e.target.files)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {analysisMode === 'jobDescription' && (
-                <FormField
-                    control={form.control}
+                  control={comprehensiveForm.control}
+                  name="resume"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Resume PDF</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(e) => field.onChange(e.target.files)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                  )}
+                  Analyze Resume
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </TabsContent>
+        <TabsContent value="jobDescription" className="m-0">
+          <CardHeader>
+            <CardTitle>Job Description Based</CardTitle>
+            <CardDescription>Analyze your resume against a specific job description for an ATS score.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...jobDescriptionForm}>
+              <form onSubmit={jobDescriptionForm.handleSubmit(onJobDescriptionSubmit)} className="space-y-6">
+                 <FormField
+                  control={jobDescriptionForm.control}
+                  name="resume"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Resume PDF</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(e) => field.onChange(e.target.files)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                    control={jobDescriptionForm.control}
                     name="jobDescription"
                     render={({ field }) => (
                     <FormItem>
@@ -201,20 +213,19 @@ export function ResumeAnalyzerClient() {
                     </FormItem>
                     )}
                 />
-              )}
-              <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="mr-2 h-4 w-4" />
-                )}
-                Analyze Resume
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                  )}
+                  Analyze Resume
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </TabsContent>
       </Card>
-
       <Card>
         <CardHeader>
           <CardTitle>Analysis Results</CardTitle>
@@ -274,6 +285,7 @@ export function ResumeAnalyzerClient() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </Tabs>
   );
 }

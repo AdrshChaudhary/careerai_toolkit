@@ -17,7 +17,7 @@ export async function callAnalyzeResume(
     await addDoc(collection(db, 'users', uid, 'analysisHistory'), {
       type: 'resume',
       input: {
-        jobDescription: values.jobDescription,
+        jobDescription: !!values.jobDescription,
       },
       output: result,
       createdAt: serverTimestamp(),
