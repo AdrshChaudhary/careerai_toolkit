@@ -1,9 +1,5 @@
-import HomeRedirect from './home-redirect';
+import { LandingPage } from '@/components/landing/landing-page';
 
 export default function Home() {
-  return (
-    <div className="flex h-screen w-screen items-center justify-center bg-background">
-      <HomeRedirect />
-    </div>
-  );
+  return <LandingPage />;
 }
