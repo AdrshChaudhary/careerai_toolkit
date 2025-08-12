@@ -19,6 +19,7 @@ import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import * as pdfjsLib from 'pdfjs-dist';
 import { callAnalyzeResume } from '@/app/dashboard/resume-analyzer/actions';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 // Set worker path for pdfjs-dist
 if (typeof window !== 'undefined') {
@@ -26,9 +27,19 @@ if (typeof window !== 'undefined') {
 }
 
 const formSchema = z.object({
+  analysisMode: z.enum(['comprehensive', 'jobDescription']),
   resume: z.any().refine((files) => files?.length == 1, 'Resume PDF is required.'),
-  jobDescription: z.string().min(50, 'Job description must be at least 50 characters.'),
+  jobDescription: z.string(),
+}).superRefine((data, ctx) => {
+    if (data.analysisMode === 'jobDescription' && data.jobDescription.length < 50) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['jobDescription'],
+            message: 'Job description must be at least 50 characters.',
+        });
+    }
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -40,7 +51,13 @@ export function ResumeAnalyzerClient() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+        analysisMode: 'comprehensive',
+        jobDescription: '',
+    }
   });
+
+  const analysisMode = form.watch('analysisMode');
 
   async function onSubmit(values: FormValues) {
     if (!user) {
@@ -80,7 +97,10 @@ export function ResumeAnalyzerClient() {
           }
 
           const result = await callAnalyzeResume(
-            { resumeText, jobDescription: values.jobDescription },
+            { 
+              resumeText, 
+              jobDescription: values.analysisMode === 'jobDescription' ? values.jobDescription : undefined
+            },
             user.uid
           );
           setAnalysisResult(result);
@@ -111,6 +131,41 @@ export function ResumeAnalyzerClient() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                control={form.control}
+                name="analysisMode"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Analysis Mode</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="comprehensive" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                           Comprehensive Analysis
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="jobDescription" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Job Description Based
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="resume"
@@ -128,23 +183,25 @@ export function ResumeAnalyzerClient() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="jobDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Paste the full job description here..."
-                        className="min-h-[200px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {analysisMode === 'jobDescription' && (
+                <FormField
+                    control={form.control}
+                    name="jobDescription"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Job Description</FormLabel>
+                        <FormControl>
+                        <Textarea
+                            placeholder="Paste the full job description here..."
+                            className="min-h-[200px]"
+                            {...field}
+                        />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+              )}
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -172,9 +229,11 @@ export function ResumeAnalyzerClient() {
           )}
           {analysisResult ? (
             <div className="space-y-6">
-              <div className="flex justify-center">
-                 <ScoreGauge score={analysisResult.atsScore} />
-              </div>
+                {analysisResult.atsScore > 0 && (
+                    <div className="flex justify-center">
+                        <ScoreGauge score={analysisResult.atsScore} />
+                    </div>
+                )}
                {analysisResult.comprehensiveAnalysis && (
                 <Alert>
                     <Bot className="h-4 w-4" />

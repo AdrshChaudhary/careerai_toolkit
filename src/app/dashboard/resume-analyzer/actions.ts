@@ -5,7 +5,7 @@ import { db } from '@/lib/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 export async function callAnalyzeResume(
-  values: { resumeText: string; jobDescription: string },
+  values: { resumeText: string; jobDescription?: string },
   uid: string
 ): Promise<AnalyzeResumeOutput> {
   try {
