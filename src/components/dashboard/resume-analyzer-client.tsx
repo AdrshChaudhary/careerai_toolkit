@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, FileText, Briefcase } from 'lucide-react';
+import { Loader2, Sparkles, FileText, Briefcase, Bot } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -175,6 +175,13 @@ export function ResumeAnalyzerClient() {
               <div className="flex justify-center">
                  <ScoreGauge score={analysisResult.atsScore} />
               </div>
+               {analysisResult.comprehensiveAnalysis && (
+                <Alert>
+                    <Bot className="h-4 w-4" />
+                    <AlertTitle>Comprehensive Analysis</AlertTitle>
+                    <AlertDescription>{analysisResult.comprehensiveAnalysis}</AlertDescription>
+                </Alert>
+               )}
               <Accordion type="single" collapsible defaultValue="summary" className="w-full">
                 <AccordionItem value="summary">
                   <AccordionTrigger>Summary Feedback</AccordionTrigger>

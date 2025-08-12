@@ -23,6 +23,7 @@ const AnalyzeResumeOutputSchema = z.object({
   experienceFeedback: z.string().describe('Feedback on the resume experience section.'),
   educationFeedback: z.string().describe('Feedback on the resume education section.'),
   jobRoleSuggestions: z.string().describe('Suggestions for suitable job roles based on the resume.'),
+  comprehensiveAnalysis: z.string().describe('A comprehensive analysis of the resume, summarizing its strengths and weaknesses and providing actionable advice for improvement.'),
 });
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
 
@@ -37,6 +38,8 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert career coach specializing in resume optimization and Applicant Tracking Systems (ATS).
 
 You will analyze the provided resume text and compare it against the provided job description. Provide feedback on the resume's summary, skills, experience, and education sections, and provide an overall ATS score (0-100).
+
+In addition, provide a comprehensive analysis that summarizes the resume's strengths and weaknesses, and gives actionable advice for improvement.
 
 Suggest suitable job roles based on the resume's content.
 
