@@ -20,6 +20,6 @@ export async function callOptimizeLinkedInProfile(
     return result;
   } catch (error) {
     console.error('Error optimizing LinkedIn profile:', error);
-    throw new Error('Failed to optimize LinkedIn profile. Please try again.');
+    throw new Error('An unexpected error occurred while optimizing the LinkedIn profile. This could be due to API rate limits or an issue with the service. Please try again later.');
   }
 }

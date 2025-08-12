@@ -26,6 +26,6 @@ export async function callAnalyzeResume(
     return result;
   } catch (error) {
     console.error('Error analyzing resume:', error);
-    throw new Error('Failed to analyze resume. Please try again.');
+    throw new Error('An unexpected error occurred while analyzing the resume. This could be due to API rate limits or an issue with the service. Please try again later.');
   }
 }
