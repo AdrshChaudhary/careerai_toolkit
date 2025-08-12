@@ -1,3 +1,9 @@
+import HomeRedirect from './home-redirect';
+
 export default function Home() {
-  return <></>;
+  return (
+    <div className="flex h-screen w-screen items-center justify-center bg-background">
+      <HomeRedirect />
+    </div>
+  );
 }
