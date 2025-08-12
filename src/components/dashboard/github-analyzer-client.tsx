@@ -4,11 +4,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { analyzeGithubProfile, AnalyzeGithubProfileOutput } from '@/ai/flows/analyze-github-profile';
-import { analyzeGithubRepository, AnalyzeGithubRepositoryOutput } from '@/ai/flows/analyze-github-repository';
-import { db } from '@/lib/firebase';
+import { AnalyzeGithubProfileOutput } from '@/ai/flows/analyze-github-profile';
+import { AnalyzeGithubRepositoryOutput } from '@/ai/flows/analyze-github-repository';
 import { useAuth } from '@/contexts/auth-context';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Github, Code, BookOpen } from 'lucide-react';
 import { MermaidChart } from '../mermaid-chart';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { callAnalyzeProfile, callAnalyzeRepo } from '@/app/dashboard/github-analyzer/actions';
 
 // Schemas
 const profileSchema = z.object({
@@ -30,31 +29,6 @@ const repoSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 type RepoFormValues = z.infer<typeof repoSchema>;
-
-// Server Actions
-async function callAnalyzeProfile(username: string, uid: string): Promise<AnalyzeGithubProfileOutput> {
-  'use server';
-  const result = await analyzeGithubProfile({ githubUsername: username });
-  await addDoc(collection(db, 'users', uid, 'analysisHistory'), {
-    type: 'githubProfile',
-    input: { username },
-    output: result,
-    createdAt: serverTimestamp(),
-  });
-  return result;
-}
-
-async function callAnalyzeRepo(url: string, uid: string): Promise<AnalyzeGithubRepositoryOutput> {
-  'use server';
-  const result = await analyzeGithubRepository({ repositoryUrl: url });
-  await addDoc(collection(db, 'users', uid, 'analysisHistory'), {
-    type: 'githubRepo',
-    input: { url },
-    output: result,
-    createdAt: serverTimestamp(),
-  });
-  return result;
-}
 
 export function GithubAnalyzerClient() {
   const [activeTab, setActiveTab] = useState('profile');

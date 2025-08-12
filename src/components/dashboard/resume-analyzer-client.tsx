@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { analyzeResume, AnalyzeResumeOutput } from '@/ai/flows/analyze-resume';
-import { db } from '@/lib/firebase';
+import { AnalyzeResumeOutput } from '@/ai/flows/analyze-resume';
 import { useAuth } from '@/contexts/auth-context';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -20,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import * as pdfjsLib from 'pdfjs-dist';
+import { callAnalyzeResume } from '@/app/dashboard/resume-analyzer/actions';
 
 // Set worker path for pdfjs-dist
 if (typeof window !== 'undefined') {
@@ -32,33 +31,6 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-async function callAnalyzeResume(
-  values: { resumeText: string; jobDescription: string },
-  uid: string
-): Promise<AnalyzeResumeOutput> {
-  'use server';
-  try {
-    const result = await analyzeResume({
-      resumeText: values.resumeText,
-      jobDescription: values.jobDescription,
-    });
-    
-    await addDoc(collection(db, 'users', uid, 'analysisHistory'), {
-      type: 'resume',
-      input: {
-        jobDescription: values.jobDescription,
-      },
-      output: result,
-      createdAt: serverTimestamp(),
-    });
-
-    return result;
-  } catch (error) {
-    console.error('Error analyzing resume:', error);
-    throw new Error('Failed to analyze resume. Please try again.');
-  }
-}
 
 export function ResumeAnalyzerClient() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeResumeOutput | null>(null);

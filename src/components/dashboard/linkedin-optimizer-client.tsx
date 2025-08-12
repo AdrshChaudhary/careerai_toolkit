@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { optimizeLinkedInProfile, OptimizeLinkedInProfileOutput } from '@/ai/flows/optimize-linkedin-profile';
-import { db } from '@/lib/firebase';
+import { OptimizeLinkedInProfileOutput } from '@/ai/flows/optimize-linkedin-profile';
 import { useAuth } from '@/contexts/auth-context';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -19,33 +17,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { readAndEncodeFile } from '@/lib/utils';
+import { callOptimizeLinkedInProfile } from '@/app/dashboard/linkedin-optimizer/actions';
 
 const formSchema = z.object({
   profile: z.any().refine((file) => file?.length == 1, 'LinkedIn profile PDF is required.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-async function callOptimizeLinkedInProfile(
-  profileDataUri: string,
-  uid: string
-): Promise<OptimizeLinkedInProfileOutput> {
-  'use server';
-  try {
-    const result = await optimizeLinkedInProfile({ profileDataUri });
-    
-    await addDoc(collection(db, 'users', uid, 'analysisHistory'), {
-      type: 'linkedin',
-      output: result,
-      createdAt: serverTimestamp(),
-    });
-
-    return result;
-  } catch (error) {
-    console.error('Error optimizing LinkedIn profile:', error);
-    throw new Error('Failed to optimize LinkedIn profile. Please try again.');
-  }
-}
 
 export function LinkedInOptimizerClient() {
   const [analysisResult, setAnalysisResult] = useState<OptimizeLinkedInProfileOutput | null>(null);
