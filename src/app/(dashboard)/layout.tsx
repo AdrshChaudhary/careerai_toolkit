@@ -18,11 +18,12 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { FileText, Linkedin, Github, Loader2 } from 'lucide-react';
+import { FileText, Linkedin, Github, Loader2, MailCheck, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, reloadUser } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -38,6 +39,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
+  }
+
+  if (!user.emailVerified) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+           <CardHeader className="text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <MailCheck className="h-6 w-6 text-primary" />
+            </div>
+             <CardTitle className="mt-4 text-2xl font-bold tracking-tight">Verify Your Email</CardTitle>
+             <CardDescription>
+              We've sent a verification link to <strong>{user.email}</strong>. Please check your inbox and follow the instructions to continue.
+             </CardDescription>
+           </CardHeader>
+           <CardContent className="flex flex-col gap-4">
+              <div className="rounded-md border border-yellow-500/50 bg-yellow-500/10 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <AlertCircle className="h-5 w-5 text-yellow-400" />
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-yellow-300">Can't find the email?</h3>
+                    <div className="mt-2 text-sm text-yellow-200">
+                      <p>Please check your spam or junk folder. The email will be from a `firebaseapp.com` address.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+             <Button onClick={async () => await reloadUser()}>I've verified my email</Button>
+             <Button variant="outline" onClick={signOut}>Sign Out & Return to Login</Button>
+           </CardContent>
+         </Card>
+      </main>
+    )
   }
 
   const menuItems = [

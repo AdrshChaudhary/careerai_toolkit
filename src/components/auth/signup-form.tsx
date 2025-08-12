@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -37,8 +37,14 @@ export function SignUpForm() {
       await updateProfile(userCredential.user, {
         displayName: values.name,
       });
-      // Ensure we push to router only after all auth operations are complete.
-      router.push('/dashboard');
+      await sendEmailVerification(userCredential.user);
+      
+      toast({
+        title: 'Account Created & Verification Email Sent',
+        description: "Please check your inbox to verify your email, then log in.",
+      });
+
+      router.push('/login');
     } catch (error: any) {
       toast({
         variant: 'destructive',

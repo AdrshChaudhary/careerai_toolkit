@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  reloadUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,8 +31,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const reloadUser = async () => {
+    if (auth.currentUser) {
+      setLoading(true);
+      await auth.currentUser.reload();
+      // onAuthStateChanged will trigger and update user state
+      // Force a re-render by setting the new user object
+      setUser(auth.currentUser);
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signOut, reloadUser }}>
       {children}
     </AuthContext.Provider>
   );
