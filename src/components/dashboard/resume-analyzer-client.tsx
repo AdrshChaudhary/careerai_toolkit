@@ -103,13 +103,13 @@ export function ResumeAnalyzerClient() {
     try {
       const resumeText = await extractText(values.resume[0]);
       const result = await callAnalyzeResume({ resumeText }, user.uid);
-      if ('error' in result) {
+      if (result && 'error' in result) {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
       } else {
         setAnalysisResult(result);
       }
     } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message });
+      toast({ variant: 'destructive', title: 'Error', description: e.message || "A client-side error occurred." });
     } finally {
       setIsLoading(false);
     }
@@ -122,13 +122,13 @@ export function ResumeAnalyzerClient() {
     try {
       const resumeText = await extractText(values.resume[0]);
       const result = await callAnalyzeResume({ resumeText, jobDescription: values.jobDescription }, user.uid);
-      if ('error' in result) {
+      if (result && 'error' in result) {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
       } else {
         setAnalysisResult(result);
       }
     } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message });
+      toast({ variant: 'destructive', title: 'Error', description: e.message || "A client-side error occurred." });
     } finally {
       setIsLoading(false);
     }
