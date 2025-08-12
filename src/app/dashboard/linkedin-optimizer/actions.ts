@@ -7,7 +7,7 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 export async function callOptimizeLinkedInProfile(
   profileDataUri: string,
   uid: string
-): Promise<OptimizeLinkedInProfileOutput> {
+): Promise<OptimizeLinkedInProfileOutput | { error: string }> {
   try {
     const result = await optimizeLinkedInProfile({ profileDataUri });
     
@@ -18,8 +18,8 @@ export async function callOptimizeLinkedInProfile(
     });
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error optimizing LinkedIn profile:', error);
-    throw new Error('An unexpected error occurred while optimizing the LinkedIn profile. This could be due to API rate limits or an issue with the service. Please try again later.');
+    return { error: error.message || 'An unexpected error occurred while optimizing the LinkedIn profile. This could be due to API rate limits or an issue with the service. Please try again later.' };
   }
 }

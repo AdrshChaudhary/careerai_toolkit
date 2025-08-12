@@ -5,7 +5,7 @@ import { analyzeGithubRepository, AnalyzeGithubRepositoryOutput } from '@/ai/flo
 import { db } from '@/lib/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
-export async function callAnalyzeProfile(username: string, uid: string): Promise<AnalyzeGithubProfileOutput> {
+export async function callAnalyzeProfile(username: string, uid: string): Promise<AnalyzeGithubProfileOutput | { error: string }> {
   try {
     const result = await analyzeGithubProfile({ githubUsername: username });
     await addDoc(collection(db, 'users', uid, 'analysisHistory'), {
@@ -15,13 +15,13 @@ export async function callAnalyzeProfile(username: string, uid: string): Promise
       createdAt: serverTimestamp(),
     });
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error analyzing GitHub profile:', error);
-    throw new Error('An unexpected error occurred while analyzing the GitHub profile. This could be due to API rate limits or an issue with the service. Please try again later.');
+    return { error: error.message || 'An unexpected error occurred while analyzing the GitHub profile. This could be due to API rate limits or an issue with the service. Please try again later.' };
   }
 }
 
-export async function callAnalyzeRepo(url: string, uid: string): Promise<AnalyzeGithubRepositoryOutput> {
+export async function callAnalyzeRepo(url: string, uid: string): Promise<AnalyzeGithubRepositoryOutput | { error: string }> {
   try {
     const result = await analyzeGithubRepository({ repositoryUrl: url });
     await addDoc(collection(db, 'users', uid, 'analysisHistory'), {
@@ -31,8 +31,8 @@ export async function callAnalyzeRepo(url: string, uid: string): Promise<Analyze
       createdAt: serverTimestamp(),
     });
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error analyzing GitHub repository:', error);
-    throw new Error('An unexpected error occurred while analyzing the GitHub repository. This could be due to API rate limits or an issue with the service. Please try again later.');
+    return { error: error.message || 'An unexpected error occurred while analyzing the GitHub repository. This could be due to API rate limits or an issue with the service. Please try again later.'};
   }
 }

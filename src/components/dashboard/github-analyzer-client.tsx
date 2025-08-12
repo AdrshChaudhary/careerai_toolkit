@@ -48,9 +48,13 @@ export function GithubAnalyzerClient() {
     setProfileResult(null);
     try {
       const result = await callAnalyzeProfile(values.githubUsername, user.uid);
-      setProfileResult(result);
+      if ('error' in result) {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      } else {
+        setProfileResult(result);
+      }
     } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message });
+      toast({ variant: 'destructive', title: 'Error', description: "A client-side error occurred." });
     } finally {
       setIsProfileLoading(false);
     }
@@ -62,9 +66,13 @@ export function GithubAnalyzerClient() {
     setRepoResult(null);
     try {
       const result = await callAnalyzeRepo(values.repositoryUrl, user.uid);
-      setRepoResult(result);
+      if ('error' in result) {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      } else {
+        setRepoResult(result);
+      }
     } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message });
+      toast({ variant: 'destructive', title: 'Error', description: "A client-side error occurred." });
     } finally {
       setIsRepoLoading(false);
     }

@@ -103,7 +103,11 @@ export function ResumeAnalyzerClient() {
     try {
       const resumeText = await extractText(values.resume[0]);
       const result = await callAnalyzeResume({ resumeText }, user.uid);
-      setAnalysisResult(result);
+      if ('error' in result) {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      } else {
+        setAnalysisResult(result);
+      }
     } catch (e: any) {
       toast({ variant: 'destructive', title: 'Error', description: e.message });
     } finally {
@@ -118,7 +122,11 @@ export function ResumeAnalyzerClient() {
     try {
       const resumeText = await extractText(values.resume[0]);
       const result = await callAnalyzeResume({ resumeText, jobDescription: values.jobDescription }, user.uid);
-      setAnalysisResult(result);
+      if ('error' in result) {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      } else {
+        setAnalysisResult(result);
+      }
     } catch (e: any) {
       toast({ variant: 'destructive', title: 'Error', description: e.message });
     } finally {

@@ -47,9 +47,13 @@ export function LinkedInOptimizerClient() {
       const file = values.profile[0];
       const profileDataUri = await readAndEncodeFile(file);
       const result = await callOptimizeLinkedInProfile(profileDataUri, user.uid);
-      setAnalysisResult(result);
+      if ('error' in result) {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      } else {
+        setAnalysisResult(result);
+      }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Error', description: error.message });
+      toast({ variant: 'destructive', title: 'Error', description: 'A client-side error occurred while processing the file.' });
     } finally {
       setIsLoading(false);
     }

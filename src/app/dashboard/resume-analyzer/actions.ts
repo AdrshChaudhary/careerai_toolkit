@@ -7,7 +7,7 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 export async function callAnalyzeResume(
   values: { resumeText: string; jobDescription?: string },
   uid: string
-): Promise<AnalyzeResumeOutput> {
+): Promise<AnalyzeResumeOutput | { error: string }> {
   try {
     const result = await analyzeResume({
       resumeText: values.resumeText,
@@ -24,8 +24,8 @@ export async function callAnalyzeResume(
     });
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error analyzing resume:', error);
-    throw new Error('An unexpected error occurred while analyzing the resume. This could be due to API rate limits or an issue with the service. Please try again later.');
+    return { error: error.message || 'An unexpected error occurred while analyzing the resume. This could be due to API rate limits or an issue with the service. Please try again later.' };
   }
 }
