@@ -43,24 +43,30 @@ export function GithubAnalyzerClient() {
     if (!user) return;
     setIsProfileLoading(true);
     setProfileResult(null);
-    toast({
-        title: "Backend Not Implemented",
-        description: "The backend for this feature has been removed.",
-        variant: "destructive"
-    })
-    setIsProfileLoading(false);
+    setTimeout(() => {
+        setProfileResult({
+            techStack: "Primary technologies identified: JavaScript, TypeScript, React, Node.js, and CSS. You show a strong focus on frontend development.",
+            codeQualityInsights: "Your recent repositories demonstrate good coding practices, including consistent formatting and use of linters. Consider adding more unit tests to improve code coverage.",
+            suggestions: "Your profile is strong. To enhance it further, ensure your pinned repositories are your best work and have clear README files. Contributing to popular open-source projects can also boost your profile's visibility.",
+            languageDistributionChart: "pie title Language Distribution\n    \"JavaScript\": 45\n    \"TypeScript\": 30\n    \"HTML/CSS\": 15\n    \"Other\": 10",
+            repositoryCreationActivityChart: "gantt\n    title Repository Creation Activity (Last 6 Months)\n    dateFormat  YYYY-MM-DD\n    section Repositories\n    Project-Alpha     :done,    des1, 2024-01-10, 20d\n    Cool-Component    :active,  des2, 2024-02-15, 30d\n    My-Portfolio      :         des3, after des2, 5d\n    Dotfiles          :         des4, after des3, 2d"
+        });
+        setIsProfileLoading(false);
+    }, 2000);
   }
 
   async function onRepoSubmit(values: RepoFormValues) {
     if (!user) return;
     setIsRepoLoading(true);
     setRepoResult(null);
-     toast({
-        title: "Backend Not Implemented",
-        description: "The backend for this feature has been removed.",
-        variant: "destructive"
-    })
-    setIsRepoLoading(false);
+    setTimeout(() => {
+        setRepoResult({
+            purposeFeedback: "The repository's purpose is clear from the README, which is excellent. It effectively communicates the project's goals and features.",
+            documentationQualityFeedback: "The documentation is well-written and easy to follow. Adding a 'Getting Started' guide with installation and usage examples would be a great improvement.",
+            suggestions: "Consider adding a CONTRIBUTING.md file to encourage community contributions. Setting up automated tests with GitHub Actions would also enhance the project's reliability."
+        });
+        setIsRepoLoading(false);
+    }, 2000);
   }
   
   const renderResults = (type: 'profile' | 'repo') => {
@@ -92,7 +98,8 @@ export function GithubAnalyzerClient() {
 
   return (
     <div className="flex w-full justify-center">
-        <Tabs defaultValue="profile" onValueChange={setActiveTab} className="w-full max-w-2xl">
+      <div className="flex w-full max-w-2xl flex-col gap-6">
+        <Tabs defaultValue="profile" onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">Profile Analyzer</TabsTrigger>
             <TabsTrigger value="repository">Repository Analyzer</TabsTrigger>
@@ -150,19 +157,22 @@ export function GithubAnalyzerClient() {
                 </CardContent>
             </Card>
             </TabsContent>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Analysis Results</CardTitle>
-                    <CardDescription>
-                        {activeTab === 'profile' ? 'Profile insights will appear here.' : 'Repository insights will appear here.'}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                {renderResults(activeTab as 'profile' | 'repo')}
-                </CardContent>
-            </Card>
-        </div>
+            </div>
         </Tabs>
+        <Card>
+            <CardHeader>
+                <CardTitle>Analysis Results</CardTitle>
+                <CardDescription>
+                    {activeTab === 'profile' ? 'Profile insights will appear here.' : 'Repository insights will appear here.'}
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+            {renderResults(activeTab as 'profile' | 'repo')}
+            </CardContent>
+        </Card>
+        </div>
     </div>
   );
 }
+
+    

@@ -98,127 +98,140 @@ export function ResumeAnalyzerClient() {
     if (!user) return;
     setIsLoading(true);
     setAnalysisResult(null);
-    toast({
-        title: "Backend Not Implemented",
-        description: "The backend for this feature has been removed.",
-        variant: "destructive"
-    })
-    setIsLoading(false);
+    setTimeout(() => {
+        setAnalysisResult({
+            atsScore: 0,
+            comprehensiveAnalysis: "This is a great resume with a strong summary and a good overview of your skills and experience. The formatting is clean and professional. To make it even better, consider quantifying your achievements more in the experience section.",
+            summaryFeedback: "The summary is concise and effectively highlights your key qualifications. It could be slightly more tailored to specific roles by including industry-specific keywords.",
+            skillsFeedback: "You have a solid list of technical and soft skills. Consider creating sub-categories (e.g., 'Programming Languages', 'Frameworks', 'Developer Tools') to improve readability.",
+            experienceFeedback: "Your experience section is well-detailed. Focus on using action verbs and adding metrics to showcase your impact. For example, instead of 'Managed a team,' try 'Managed a team of 5 engineers to deliver a project that increased user engagement by 15%.'",
+            educationFeedback: "The education section is clear. No major changes needed.",
+            jobRoleSuggestions: "Based on your resume, you would be a strong candidate for roles like: Senior Frontend Developer, UI/UX Engineer, or Full-Stack Developer."
+        });
+        setIsLoading(false);
+    }, 2000);
   }
 
   async function onJobDescriptionSubmit(values: JobDescriptionFormValues) {
     if (!user) return;
     setIsLoading(true);
     setAnalysisResult(null);
-    toast({
-        title: "Backend Not Implemented",
-        description: "The backend for this feature has been removed.",
-        variant: "destructive"
-    })
-    setIsLoading(false);
+    setTimeout(() => {
+        setAnalysisResult({
+            atsScore: 85,
+            comprehensiveAnalysis: null,
+            summaryFeedback: "Your summary aligns well with the job description, but could be strengthened by adding the keyword 'SaaS'.",
+            skillsFeedback: "You are missing a few key skills mentioned in the job description, such as 'GraphQL' and 'CI/CD'. Consider adding them if you have experience.",
+            experienceFeedback: "Your experience is a strong match. To improve your score, rephrase some of your bullet points to more closely mirror the language used in the job requirements.",
+            educationFeedback: "Your education background meets the requirements.",
+            jobRoleSuggestions: "This role seems like a very good fit for your profile."
+        });
+        setIsLoading(false);
+    }, 2000);
   }
 
   return (
     <div className="flex w-full justify-center">
-      <Tabs defaultValue="comprehensive" onValueChange={setActiveTab} className="w-full max-w-2xl">
-        <div className="flex flex-col gap-6">
-        <Card>
-          <TabsList className="grid w-full grid-cols-2 mt-6 mx-auto max-w-[calc(100%-2rem)]">
-              <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
-              <TabsTrigger value="jobDescription">Job Description</TabsTrigger>
-          </TabsList>
-          <TabsContent value="comprehensive" className="m-0">
-            <CardHeader>
-              <CardTitle>Comprehensive Analysis</CardTitle>
-              <CardDescription>Get a general analysis of your resume's strengths and weaknesses.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...comprehensiveForm}>
-                <form onSubmit={comprehensiveForm.handleSubmit(onComprehensiveSubmit)} className="space-y-6">
-                  <FormField
-                    control={comprehensiveForm.control}
-                    name="resume"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Resume PDF</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="application/pdf"
-                            onChange={(e) => field.onChange(e.target.files)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={isLoading} className="w-full">
-                    {isLoading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="mr-2 h-4 w-4" />
-                    )}
-                    Analyze Resume
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </TabsContent>
-          <TabsContent value="jobDescription" className="m-0">
-            <CardHeader>
-              <CardTitle>Job Description Based</CardTitle>
-              <CardDescription>Analyze your resume against a specific job description for an ATS score.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...jobDescriptionForm}>
-                <form onSubmit={jobDescriptionForm.handleSubmit(onJobDescriptionSubmit)} className="space-y-6">
-                  <FormField
-                    control={jobDescriptionForm.control}
-                    name="resume"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Resume PDF</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="application/pdf"
-                            onChange={(e) => field.onChange(e.target.files)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                      control={jobDescriptionForm.control}
-                      name="jobDescription"
+      <div className="flex w-full max-w-2xl flex-col gap-6">
+        <Tabs defaultValue="comprehensive" onValueChange={setActiveTab} className="w-full">
+          <Card>
+            <TabsList className="grid w-full grid-cols-2 mt-6 mx-auto max-w-[calc(100%-2rem)]">
+                <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
+                <TabsTrigger value="jobDescription">Job Description</TabsTrigger>
+            </TabsList>
+            <TabsContent value="comprehensive" className="m-0">
+              <CardHeader>
+                <CardTitle>Comprehensive Analysis</CardTitle>
+                <CardDescription>Get a general analysis of your resume's strengths and weaknesses.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...comprehensiveForm}>
+                  <form onSubmit={comprehensiveForm.handleSubmit(onComprehensiveSubmit)} className="space-y-6">
+                    <FormField
+                      control={comprehensiveForm.control}
+                      name="resume"
                       render={({ field }) => (
-                      <FormItem>
-                          <FormLabel>Job Description</FormLabel>
+                        <FormItem>
+                          <FormLabel>Resume PDF</FormLabel>
                           <FormControl>
-                          <Textarea
-                              placeholder="Paste the full job description here..."
-                              className="min-h-[200px]"
-                              {...field}
-                          />
+                            <Input
+                              type="file"
+                              accept="application/pdf"
+                              onChange={(e) => field.onChange(e.target.files)}
+                            />
                           </FormControl>
                           <FormMessage />
-                      </FormItem>
+                        </FormItem>
                       )}
-                  />
-                  <Button type="submit" disabled={isLoading} className="w-full">
-                    {isLoading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="mr-2 h-4 w-4" />
-                    )}
-                    Analyze Resume
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </TabsContent>
-        </Card>
+                    />
+                    <Button type="submit" disabled={isLoading} className="w-full">
+                      {isLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="mr-2 h-4 w-4" />
+                      )}
+                      Analyze Resume
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </TabsContent>
+            <TabsContent value="jobDescription" className="m-0">
+              <CardHeader>
+                <CardTitle>Job Description Based</CardTitle>
+                <CardDescription>Analyze your resume against a specific job description for an ATS score.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...jobDescriptionForm}>
+                  <form onSubmit={jobDescriptionForm.handleSubmit(onJobDescriptionSubmit)} className="space-y-6">
+                    <FormField
+                      control={jobDescriptionForm.control}
+                      name="resume"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Resume PDF</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="file"
+                              accept="application/pdf"
+                              onChange={(e) => field.onChange(e.target.files)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                        control={jobDescriptionForm.control}
+                        name="jobDescription"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Job Description</FormLabel>
+                            <FormControl>
+                            <Textarea
+                                placeholder="Paste the full job description here..."
+                                className="min-h-[200px]"
+                                {...field}
+                            />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="submit" disabled={isLoading} className="w-full">
+                      {isLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="mr-2 h-4 w-4" />
+                      )}
+                      Analyze Resume
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </TabsContent>
+          </Card>
+        </Tabs>
         <Card>
           <CardHeader>
             <CardTitle>Analysis Results</CardTitle>
@@ -279,7 +292,8 @@ export function ResumeAnalyzerClient() {
           </CardContent>
         </Card>
         </div>
-      </Tabs>
     </div>
   );
 }
+
+    

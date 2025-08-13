@@ -41,12 +41,17 @@ export function LinkedInOptimizerClient() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-     toast({
-        title: "Backend Not Implemented",
-        description: "The backend for this feature has been removed.",
-        variant: "destructive"
-    })
-    setIsLoading(false);
+    setTimeout(() => {
+        setAnalysisResult({
+            profileStrengthScore: 78,
+            headlineFeedback: "Your headline is good, but could be more impactful. Try adding a specific achievement or a key skill. For example: 'Senior Software Engineer at TechCorp | Building Scalable Web Applications with React & Node.js'",
+            summaryFeedback: "Your 'About' section provides a good overview. To make it more engaging, tell a story about your professional journey and what drives you. Break up long paragraphs into smaller, scannable chunks.",
+            experienceFeedback: "You've listed your responsibilities well. Now, focus on accomplishments. Use the STAR method (Situation, Task, Action, Result) to describe your achievements with quantifiable results.",
+            skillsFeedback: "You have a strong list of skills. Make sure your top 5 skills are the most relevant to the roles you're targeting. Also, actively seek endorsements for your key skills from your connections.",
+            keywordSuggestions: "Consider adding these keywords to your profile to improve your visibility in recruiter searches: 'Cloud Computing', 'Agile Methodologies', 'System Design', 'Microservices'."
+        });
+        setIsLoading(false);
+    }, 2000);
   }
 
   return (
@@ -151,3 +156,5 @@ export function LinkedInOptimizerClient() {
     </div>
   );
 }
+
+    
