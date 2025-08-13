@@ -106,6 +106,7 @@ export function ResumeAnalyzerClient() {
             skillsFeedback: "You have a solid list of technical and soft skills. Consider creating sub-categories (e.g., 'Programming Languages', 'Frameworks', 'Developer Tools') to improve readability.",
             experienceFeedback: "Your experience section is well-detailed. Focus on using action verbs and adding metrics to showcase your impact. For example, instead of 'Managed a team,' try 'Managed a team of 5 engineers to deliver a project that increased user engagement by 15%.'",
             educationFeedback: "The education section is clear. No major changes needed.",
+            projectFeedback: "The project descriptions are good, but could be improved by highlighting the specific technologies used for each project and including links to live demos or source code where possible.",
             jobRoleSuggestions: "Based on your resume, you would be a strong candidate for roles like: Senior Frontend Developer, UI/UX Engineer, or Full-Stack Developer.",
             overallSuggestions: "Your resume is strong, but tailoring it to each job application by highlighting the most relevant skills and experiences will significantly increase your chances of getting an interview. Good luck!",
         });
@@ -125,6 +126,7 @@ export function ResumeAnalyzerClient() {
             skillsFeedback: "You are missing a few key skills mentioned in the job description, such as 'GraphQL' and 'CI/CD'. Consider adding them if you have experience.",
             experienceFeedback: "Your experience is a strong match. To improve your score, rephrase some of your bullet points to more closely mirror the language used in the job requirements.",
             educationFeedback: "Your education background meets the requirements.",
+            projectFeedback: "Your projects demonstrate relevant skills, but ensure they are prominently featured if they align with key responsibilities in the job description.",
             jobRoleSuggestions: "This role seems like a very good fit for your profile.",
             overallSuggestions: "You are a strong candidate for this role. To stand out, consider writing a compelling cover letter that elaborates on your most relevant projects and expresses your enthusiasm for the company.",
         });
@@ -181,7 +183,7 @@ export function ResumeAnalyzerClient() {
             <TabsContent value="jobDescription" className="m-0">
               <CardHeader>
                 <CardTitle>Job Description Based</CardTitle>
-                <CardDescription>Analyze your resume against a specific job description for an ATS score.</CardDescription>
+                <CardDescription>Analyze your resume against a specific job description for an Overall score.</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...jobDescriptionForm}>
@@ -273,6 +275,10 @@ export function ResumeAnalyzerClient() {
                   <AccordionItem value="experience">
                     <AccordionTrigger>Experience Feedback</AccordionTrigger>
                     <AccordionContent>{analysisResult.experienceFeedback}</AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="projects">
+                    <AccordionTrigger>Project Feedback</AccordionTrigger>
+                    <AccordionContent>{analysisResult.projectFeedback}</AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="education">
                     <AccordionTrigger>Education Feedback</AccordionTrigger>
