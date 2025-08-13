@@ -50,14 +50,6 @@ export function LandingPage() {
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
              <nav className="flex items-center gap-2">
-                <div className="hidden items-center gap-2 md:flex">
-                    {socialLinks.map((link) => (
-                    <Link key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
-                        <link.icon className="h-5 w-5" />
-                        <span className="sr-only">{link.name}</span>
-                    </Link>
-                    ))}
-                </div>
               <Button variant="outline" asChild className="hover:bg-primary/10 hover:text-primary">
                 <Link href="/login">Login</Link>
               </Button>
