@@ -4,7 +4,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/auth-context';
 import { cn } from '@/lib/utils';
-import Script from 'next/script';
+import { KofiWidget } from '@/components/kofi-widget';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -25,17 +25,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </AuthProvider>
-        <Script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js' strategy="lazyOnload" />
-        <Script id="kofi-widget-config" strategy="lazyOnload">
-          {`
-            kofiWidgetOverlay.draw('aadarshchaudhary', {
-              'type': 'floating-chat',
-              'floating-chat.donateButton.text': 'Support me',
-              'floating-chat.donateButton.background-color': '#794bc4',
-              'floating-chat.donateButton.text-color': '#fff'
-            });
-          `}
-        </Script>
+        <KofiWidget />
       </body>
     </html>
   );
