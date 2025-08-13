@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/icons';
-import { ArrowRight, FileText, Linkedin, Github } from 'lucide-react';
+import { ArrowRight, FileText, Linkedin, Github, Instagram, Twitter, PenSquare, Globe } from 'lucide-react';
 
 const features = [
   {
@@ -24,6 +24,15 @@ const features = [
     link: '/dashboard/github-analyzer',
   },
 ];
+
+const socialLinks = [
+    { name: 'LinkedIn', href: 'https://www.linkedin.com/in/aadarshchaudhary/', icon: Linkedin },
+    { name: 'Instagram', href: 'https://www.instagram.com/aadar.ssshhh/', icon: Instagram },
+    { name: 'Twitter', href: 'https://x.com/ImAadrsh', icon: Twitter },
+    { name: 'GitHub', href: 'https://github.com/AdrshChaudhary', icon: Github },
+    { name: 'Medium', href: 'https://medium.com/@im.aadrsh', icon: PenSquare },
+    { name: 'Portfolio', href: 'https://aadrsh.netlify.app/', icon: Globe },
+]
 
 export function LandingPage() {
   return (
@@ -107,6 +116,14 @@ export function LandingPage() {
           <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
             Built by You. Powered by AI.
           </p>
+           <div className="flex items-center gap-4">
+            {socialLinks.map((link) => (
+              <Link key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+                <link.icon className="h-5 w-5" />
+                <span className="sr-only">{link.name}</span>
+              </Link>
+            ))}
+          </div>
         </div>
       </footer>
     </div>
