@@ -11,6 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Send } from 'lucide-react';
+import { useAuth } from '@/contexts/auth-context';
+import { db } from '@/lib/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 const formSchema = z.object({
   subject: z.string().min(5, { message: 'Subject must be at least 5 characters.' }),
@@ -22,6 +25,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function ContactSupportPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -32,17 +36,40 @@ export default function ContactSupportPage() {
   });
 
   async function onSubmit(values: FormValues) {
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Error',
+        description: 'You must be logged in to send a message.',
+      });
+      return;
+    }
+
     setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
+    try {
+      await addDoc(collection(db, 'supportTickets'), {
+        ...values,
+        userId: user.uid,
+        userEmail: user.email,
+        createdAt: serverTimestamp(),
+        status: 'open',
+      });
 
-    toast({
-      title: 'Message Sent!',
-      description: "Thanks for reaching out. We'll get back to you as soon as possible.",
-    });
+      toast({
+        title: 'Message Sent!',
+        description: "Thanks for reaching out. We'll get back to you as soon as possible.",
+      });
 
-    form.reset();
+      form.reset();
+    } catch (error) {
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'There was a problem sending your message. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -85,7 +112,7 @@ export default function ContactSupportPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} className="w-full">
+              <Button type="submit" disabled={isLoading || !user} className="w-full">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                 Submit
               </Button>
