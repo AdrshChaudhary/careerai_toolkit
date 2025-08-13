@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import Script from 'next/script';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/icons';
@@ -107,8 +110,15 @@ export function LandingPage() {
           <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
             Built by You. Powered by AI.
           </p>
+          <div id="kofi-widget-container"></div>
         </div>
       </footer>
+      <Script src='https://storage.ko-fi.com/cdn/widget/Widget_2.js' strategy='lazyOnload' onReady={() => {
+        // @ts-ignore
+        kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'F1F51CX8CM');
+        // @ts-ignore
+        kofiwidget2.draw();
+      }} />
     </div>
   );
 }
