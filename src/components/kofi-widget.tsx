@@ -29,7 +29,7 @@ export function KofiWidget() {
         if (window.kofiWidgetOverlay) {
             window.kofiWidgetOverlay.draw('aadarshchaudhary', kofiConfig);
         }
-    }, [pathname]); // Re-run the effect when the path changes
+    }, [pathname, kofiConfig]); // Re-run the effect when the path or config changes
 
     return (
         <>
