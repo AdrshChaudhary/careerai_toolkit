@@ -136,11 +136,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
            <SidebarTrigger />
           <div className="flex-1">
             <h1 className="text-lg font-semibold sm:text-xl">
-              {menuItems.find((item) => pathname === item.href)?.label || 'Dashboard'}
+              {menuItems.find((item) => pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href)))?.label || 'Dashboard'}
             </h1>
           </div>
           <div>
-            <UserNav user={user} signOut={signOut} />
+            <UserNav user={user} signOut={signOut} isInHeader={true} />
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>

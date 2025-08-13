@@ -40,7 +40,7 @@ export function LandingPage() {
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="flex items-center">
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="hover:bg-primary/10 hover:text-primary">
                 <Link href="/login">Login</Link>
               </Button>
               <Button asChild>
