@@ -52,7 +52,7 @@ export function ScoreGauge({ score }: ScoreGaugeProps) {
         <span className="text-4xl font-bold" style={{ color }}>
           {score}
         </span>
-        <span className="text-sm text-muted-foreground">ATS Score</span>
+        <span className="text-sm text-muted-foreground">Overall Score</span>
       </div>
     </div>
   );

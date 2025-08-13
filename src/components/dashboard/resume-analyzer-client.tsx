@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, FileText, Briefcase, Bot } from 'lucide-react';
+import { Loader2, Sparkles, FileText, Briefcase, Bot, Lightbulb } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -100,13 +100,14 @@ export function ResumeAnalyzerClient() {
     setAnalysisResult(null);
     setTimeout(() => {
         setAnalysisResult({
-            atsScore: 0,
+            score: 75,
             comprehensiveAnalysis: "This is a great resume with a strong summary and a good overview of your skills and experience. The formatting is clean and professional. To make it even better, consider quantifying your achievements more in the experience section.",
             summaryFeedback: "The summary is concise and effectively highlights your key qualifications. It could be slightly more tailored to specific roles by including industry-specific keywords.",
             skillsFeedback: "You have a solid list of technical and soft skills. Consider creating sub-categories (e.g., 'Programming Languages', 'Frameworks', 'Developer Tools') to improve readability.",
             experienceFeedback: "Your experience section is well-detailed. Focus on using action verbs and adding metrics to showcase your impact. For example, instead of 'Managed a team,' try 'Managed a team of 5 engineers to deliver a project that increased user engagement by 15%.'",
             educationFeedback: "The education section is clear. No major changes needed.",
-            jobRoleSuggestions: "Based on your resume, you would be a strong candidate for roles like: Senior Frontend Developer, UI/UX Engineer, or Full-Stack Developer."
+            jobRoleSuggestions: "Based on your resume, you would be a strong candidate for roles like: Senior Frontend Developer, UI/UX Engineer, or Full-Stack Developer.",
+            overallSuggestions: "Your resume is strong, but tailoring it to each job application by highlighting the most relevant skills and experiences will significantly increase your chances of getting an interview. Good luck!",
         });
         setIsLoading(false);
     }, 2000);
@@ -118,13 +119,14 @@ export function ResumeAnalyzerClient() {
     setAnalysisResult(null);
     setTimeout(() => {
         setAnalysisResult({
-            atsScore: 85,
+            score: 85,
             comprehensiveAnalysis: null,
             summaryFeedback: "Your summary aligns well with the job description, but could be strengthened by adding the keyword 'SaaS'.",
             skillsFeedback: "You are missing a few key skills mentioned in the job description, such as 'GraphQL' and 'CI/CD'. Consider adding them if you have experience.",
             experienceFeedback: "Your experience is a strong match. To improve your score, rephrase some of your bullet points to more closely mirror the language used in the job requirements.",
             educationFeedback: "Your education background meets the requirements.",
-            jobRoleSuggestions: "This role seems like a very good fit for your profile."
+            jobRoleSuggestions: "This role seems like a very good fit for your profile.",
+            overallSuggestions: "You are a strong candidate for this role. To stand out, consider writing a compelling cover letter that elaborates on your most relevant projects and expresses your enthusiasm for the company.",
         });
         setIsLoading(false);
     }, 2000);
@@ -132,7 +134,7 @@ export function ResumeAnalyzerClient() {
 
   return (
     <div className="flex w-full justify-center">
-      <div className="flex w-full max-w-2xl flex-col gap-6">
+      <div className="w-full max-w-2xl flex flex-col gap-6">
         <Tabs defaultValue="comprehensive" onValueChange={setActiveTab} className="w-full">
           <Card>
             <TabsList className="grid w-full grid-cols-2 mt-6 mx-auto max-w-[calc(100%-2rem)]">
@@ -232,6 +234,7 @@ export function ResumeAnalyzerClient() {
             </TabsContent>
           </Card>
         </Tabs>
+        
         <Card>
           <CardHeader>
             <CardTitle>Analysis Results</CardTitle>
@@ -246,9 +249,9 @@ export function ResumeAnalyzerClient() {
             )}
             {analysisResult ? (
               <div className="space-y-6">
-                  {analysisResult.atsScore > 0 && (
+                  {analysisResult.score > 0 && (
                       <div className="flex justify-center">
-                          <ScoreGauge score={analysisResult.atsScore} />
+                          <ScoreGauge score={analysisResult.score} />
                       </div>
                   )}
                 {analysisResult.comprehensiveAnalysis && (
@@ -282,6 +285,12 @@ export function ResumeAnalyzerClient() {
                     <AlertTitle>Suggested Job Roles</AlertTitle>
                     <AlertDescription>{analysisResult.jobRoleSuggestions}</AlertDescription>
                 </Alert>
+
+                <Alert>
+                    <Lightbulb className="h-4 w-4" />
+                    <AlertTitle>Overall Suggestions</AlertTitle>
+                    <AlertDescription>{analysisResult.overallSuggestions}</AlertDescription>
+                </Alert>
               </div>
             ) : !isLoading && (
               <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
@@ -295,5 +304,3 @@ export function ResumeAnalyzerClient() {
     </div>
   );
 }
-
-    

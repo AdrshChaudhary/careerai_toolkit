@@ -12,9 +12,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Github, Code, BookOpen } from 'lucide-react';
+import { Loader2, Sparkles, Github, Code, BookOpen, Users, GitFork, Lightbulb } from 'lucide-react';
 import { MermaidChart } from '../mermaid-chart';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Separator } from '../ui/separator';
 
 // Schemas
 const profileSchema = z.object({
@@ -45,11 +47,16 @@ export function GithubAnalyzerClient() {
     setProfileResult(null);
     setTimeout(() => {
         setProfileResult({
-            techStack: "Primary technologies identified: JavaScript, TypeScript, React, Node.js, and CSS. You show a strong focus on frontend development.",
-            codeQualityInsights: "Your recent repositories demonstrate good coding practices, including consistent formatting and use of linters. Consider adding more unit tests to improve code coverage.",
-            suggestions: "Your profile is strong. To enhance it further, ensure your pinned repositories are your best work and have clear README files. Contributing to popular open-source projects can also boost your profile's visibility.",
-            languageDistributionChart: "pie title Language Distribution\n    \"JavaScript\": 45\n    \"TypeScript\": 30\n    \"HTML/CSS\": 15\n    \"Other\": 10",
-            repositoryCreationActivityChart: "gantt\n    title Repository Creation Activity (Last 6 Months)\n    dateFormat  YYYY-MM-DD\n    section Repositories\n    Project-Alpha     :done,    des1, 2024-01-10, 20d\n    Cool-Component    :active,  des2, 2024-02-15, 30d\n    My-Portfolio      :         des3, after des2, 5d\n    Dotfiles          :         des4, after des3, 2d"
+            name: "Linus Torvalds",
+            avatarUrl: "https://avatars.githubusercontent.com/u/1024025?v=4",
+            repoCount: 6,
+            followers: 197000,
+            following: 0,
+            techStack: "Primary technologies identified: C, Assembly, and Shell scripting. You have a deep focus on systems-level programming and operating systems.",
+            codeQualityInsights: "Code is exceptionally well-structured and follows strict coding standards, which is expected for kernel development. There is a strong emphasis on performance and stability.",
+            overallSuggestions: "Your profile is legendary. For others looking to build a similar profile, focus on contributing to large-scale, impactful open-source projects. Clear and concise commit messages are key.",
+            languageDistributionChart: "pie title Language Distribution\n    \"C\": 85\n    \"Assembly\": 10\n    \"Shell\": 5",
+            repositoryCreationActivityChart: "gantt\n    title Repository Creation Activity\n    dateFormat  YYYY-MM-DD\n    section Core Projects\n    Linux Kernel     :done,    des1, 1991-08-25, 12000d\n    Subsurface       :active,  des2, 2011-10-01, 4000d"
         });
         setIsProfileLoading(false);
     }, 2000);
@@ -61,9 +68,9 @@ export function GithubAnalyzerClient() {
     setRepoResult(null);
     setTimeout(() => {
         setRepoResult({
-            purposeFeedback: "The repository's purpose is clear from the README, which is excellent. It effectively communicates the project's goals and features.",
-            documentationQualityFeedback: "The documentation is well-written and easy to follow. Adding a 'Getting Started' guide with installation and usage examples would be a great improvement.",
-            suggestions: "Consider adding a CONTRIBUTING.md file to encourage community contributions. Setting up automated tests with GitHub Actions would also enhance the project's reliability."
+            purposeFeedback: "The repository's purpose is crystal clear from the README and project documentation. It effectively communicates the project's massive scope and goals.",
+            documentationQualityFeedback: "The documentation is extensive, well-maintained, and serves as a benchmark for large open-source projects. It includes guides for contributors, users, and developers.",
+            overallSuggestions: "This repository is a model for open-source projects. To maintain this standard, continue to enforce strict contribution guidelines and keep documentation up-to-date with the latest changes."
         });
         setIsRepoLoading(false);
     }, 2000);
@@ -74,12 +81,40 @@ export function GithubAnalyzerClient() {
         if(isProfileLoading) return <div className="flex justify-center p-8"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
         if(!profileResult) return <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center"><Github className="h-12 w-12 text-muted-foreground" /><p>Profile analysis results will appear here.</p></div>
         return (
-            <div className="space-y-4">
-                <Alert><Code className="h-4 w-4" /><AlertTitle>Tech Stack</AlertTitle><AlertDescription>{profileResult.techStack}</AlertDescription></Alert>
-                <Alert><Code className="h-4 w-4" /><AlertTitle>Code Quality Insights</AlertTitle><AlertDescription>{profileResult.codeQualityInsights}</AlertDescription></Alert>
-                <Alert><Code className="h-4 w-4" /><AlertTitle>Suggestions</AlertTitle><AlertDescription>{profileResult.suggestions}</AlertDescription></Alert>
-                {profileResult.languageDistributionChart && <Card><CardHeader><CardTitle>Language Distribution</CardTitle></CardHeader><CardContent><MermaidChart chart={profileResult.languageDistributionChart} /></CardContent></Card>}
-                {profileResult.repositoryCreationActivityChart && <Card><CardHeader><CardTitle>Repo Creation Activity</CardTitle></CardHeader><CardContent><MermaidChart chart={profileResult.repositoryCreationActivityChart} /></CardContent></Card>}
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader className="flex flex-col items-center text-center">
+                        <Avatar className="h-24 w-24 border-4 border-primary/20">
+                            <AvatarImage src={profileResult.avatarUrl} alt={profileResult.name} />
+                            <AvatarFallback>{profileResult.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <CardTitle className="mt-4 text-2xl">{profileResult.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-3 divide-x text-center">
+                            <div className="px-2">
+                                <p className="text-2xl font-bold">{profileResult.repoCount}</p>
+                                <p className="text-sm text-muted-foreground">Repositories</p>
+                            </div>
+                            <div className="px-2">
+                                <p className="text-2xl font-bold">{Intl.NumberFormat('en-US', { notation: 'compact' }).format(profileResult.followers)}</p>
+                                <p className="text-sm text-muted-foreground">Followers</p>
+                            </div>
+                            <div className="px-2">
+                                <p className="text-2xl font-bold">{profileResult.following}</p>
+                                <p className="text-sm text-muted-foreground">Following</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Separator />
+                <div className="space-y-4">
+                  <Alert><Code className="h-4 w-4" /><AlertTitle>Tech Stack</AlertTitle><AlertDescription>{profileResult.techStack}</AlertDescription></Alert>
+                  <Alert><Code className="h-4 w-4" /><AlertTitle>Code Quality Insights</AlertTitle><AlertDescription>{profileResult.codeQualityInsights}</AlertDescription></Alert>
+                  {profileResult.languageDistributionChart && <Card><CardHeader><CardTitle>Language Distribution</CardTitle></CardHeader><CardContent><MermaidChart chart={profileResult.languageDistributionChart} /></CardContent></Card>}
+                  {profileResult.repositoryCreationActivityChart && <Card><CardHeader><CardTitle>Repo Creation Activity</CardTitle></CardHeader><CardContent><MermaidChart chart={profileResult.repositoryCreationActivityChart} /></CardContent></Card>}
+                  <Alert><Lightbulb className="h-4 w-4" /><AlertTitle>Overall Suggestions</AlertTitle><AlertDescription>{profileResult.overallSuggestions}</AlertDescription></Alert>
+                </div>
             </div>
         )
       } else {
@@ -89,7 +124,7 @@ export function GithubAnalyzerClient() {
             <div className="space-y-4">
                 <Alert><BookOpen className="h-4 w-4" /><AlertTitle>Purpose Feedback</AlertTitle><AlertDescription>{repoResult.purposeFeedback}</AlertDescription></Alert>
                 <Alert><BookOpen className="h-4 w-4" /><AlertTitle>Documentation Quality</AlertTitle><AlertDescription>{repoResult.documentationQualityFeedback}</AlertDescription></Alert>
-                <Alert><BookOpen className="h-4 w-4" /><AlertTitle>Suggestions</AlertTitle><AlertDescription>{repoResult.suggestions}</AlertDescription></Alert>
+                <Alert><Lightbulb className="h-4 w-4" /><AlertTitle>Overall Suggestions</AlertTitle><AlertDescription>{repoResult.overallSuggestions}</AlertDescription></Alert>
             </div>
         )
       }
@@ -98,7 +133,7 @@ export function GithubAnalyzerClient() {
 
   return (
     <div className="flex w-full justify-center">
-      <div className="flex w-full max-w-2xl flex-col gap-6">
+      <div className="w-full max-w-2xl flex flex-col gap-6">
         <Tabs defaultValue="profile" onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">Profile Analyzer</TabsTrigger>
@@ -143,7 +178,7 @@ export function GithubAnalyzerClient() {
                     <FormField control={repoForm.control} name="repositoryUrl" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Repository URL</FormLabel>
-                            <FormControl><Input placeholder="https://github.com/facebook/react" {...field} /></FormControl>
+                            <FormControl><Input placeholder="https://github.com/torvalds/linux" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -174,5 +209,3 @@ export function GithubAnalyzerClient() {
     </div>
   );
 }
-
-    
