@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { AnalyzeResumeOutput } from '@/ai/flows/analyze-resume';
 import { useAuth } from '@/contexts/auth-context';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +17,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import * as pdfjsLib from 'pdfjs-dist';
-import { callAnalyzeResume } from '@/app/dashboard/resume-analyzer/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Set worker path for pdfjs-dist
@@ -40,7 +38,7 @@ type JobDescriptionFormValues = z.infer<typeof jobDescriptionSchema>;
 
 
 export function ResumeAnalyzerClient() {
-  const [analysisResult, setAnalysisResult] = useState<AnalyzeResumeOutput | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('comprehensive');
   const { toast } = useToast();
@@ -100,38 +98,24 @@ export function ResumeAnalyzerClient() {
     if (!user) return;
     setIsLoading(true);
     setAnalysisResult(null);
-    try {
-      const resumeText = await extractText(values.resume[0]);
-      const result = await callAnalyzeResume({ resumeText }, user.uid);
-      if (result && 'error' in result) {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
-      } else {
-        setAnalysisResult(result);
-      }
-    } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message || "A client-side error occurred." });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({
+        title: "Backend Not Implemented",
+        description: "The backend for this feature has been removed.",
+        variant: "destructive"
+    })
+    setIsLoading(false);
   }
 
   async function onJobDescriptionSubmit(values: JobDescriptionFormValues) {
     if (!user) return;
     setIsLoading(true);
     setAnalysisResult(null);
-    try {
-      const resumeText = await extractText(values.resume[0]);
-      const result = await callAnalyzeResume({ resumeText, jobDescription: values.jobDescription }, user.uid);
-      if (result && 'error' in result) {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
-      } else {
-        setAnalysisResult(result);
-      }
-    } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message || "A client-side error occurred." });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({
+        title: "Backend Not Implemented",
+        description: "The backend for this feature has been removed.",
+        variant: "destructive"
+    })
+    setIsLoading(false);
   }
 
   return (

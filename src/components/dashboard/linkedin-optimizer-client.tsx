@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { OptimizeLinkedInProfileOutput } from '@/ai/flows/optimize-linkedin-profile';
 import { useAuth } from '@/contexts/auth-context';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +16,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { readAndEncodeFile } from '@/lib/utils';
-import { callOptimizeLinkedInProfile } from '@/app/dashboard/linkedin-optimizer/actions';
 
 const formSchema = z.object({
   profile: z.any().refine((file) => file?.length == 1, 'LinkedIn profile PDF is required.'),
@@ -26,7 +24,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function LinkedInOptimizerClient() {
-  const [analysisResult, setAnalysisResult] = useState<OptimizeLinkedInProfileOutput | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -43,20 +41,12 @@ export function LinkedInOptimizerClient() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    try {
-      const file = values.profile[0];
-      const profileDataUri = await readAndEncodeFile(file);
-      const result = await callOptimizeLinkedInProfile(profileDataUri, user.uid);
-      if (result && 'error' in result) {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
-      } else {
-        setAnalysisResult(result);
-      }
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Error', description: error.message || 'A client-side error occurred while processing the file.' });
-    } finally {
-      setIsLoading(false);
-    }
+     toast({
+        title: "Backend Not Implemented",
+        description: "The backend for this feature has been removed.",
+        variant: "destructive"
+    })
+    setIsLoading(false);
   }
 
   return (

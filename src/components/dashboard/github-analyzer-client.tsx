@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { AnalyzeGithubProfileOutput } from '@/ai/flows/analyze-github-profile';
-import { AnalyzeGithubRepositoryOutput } from '@/ai/flows/analyze-github-repository';
 import { useAuth } from '@/contexts/auth-context';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +15,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Github, Code, BookOpen } from 'lucide-react';
 import { MermaidChart } from '../mermaid-chart';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { callAnalyzeProfile, callAnalyzeRepo } from '@/app/dashboard/github-analyzer/actions';
 
 // Schemas
 const profileSchema = z.object({
@@ -32,8 +29,8 @@ type RepoFormValues = z.infer<typeof repoSchema>;
 
 export function GithubAnalyzerClient() {
   const [activeTab, setActiveTab] = useState('profile');
-  const [profileResult, setProfileResult] = useState<AnalyzeGithubProfileOutput | null>(null);
-  const [repoResult, setRepoResult] = useState<AnalyzeGithubRepositoryOutput | null>(null);
+  const [profileResult, setProfileResult] = useState<any | null>(null);
+  const [repoResult, setRepoResult] = useState<any | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isRepoLoading, setIsRepoLoading] = useState(false);
   const { toast } = useToast();
@@ -46,36 +43,24 @@ export function GithubAnalyzerClient() {
     if (!user) return;
     setIsProfileLoading(true);
     setProfileResult(null);
-    try {
-      const result = await callAnalyzeProfile(values.githubUsername, user.uid);
-      if (result && 'error' in result) {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
-      } else {
-        setProfileResult(result);
-      }
-    } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message || "A client-side error occurred." });
-    } finally {
-      setIsProfileLoading(false);
-    }
+    toast({
+        title: "Backend Not Implemented",
+        description: "The backend for this feature has been removed.",
+        variant: "destructive"
+    })
+    setIsProfileLoading(false);
   }
 
   async function onRepoSubmit(values: RepoFormValues) {
     if (!user) return;
     setIsRepoLoading(true);
     setRepoResult(null);
-    try {
-      const result = await callAnalyzeRepo(values.repositoryUrl, user.uid);
-      if (result && 'error' in result) {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
-      } else {
-        setRepoResult(result);
-      }
-    } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Error', description: e.message || "A client-side error occurred." });
-    } finally {
-      setIsRepoLoading(false);
-    }
+     toast({
+        title: "Backend Not Implemented",
+        description: "The backend for this feature has been removed.",
+        variant: "destructive"
+    })
+    setIsRepoLoading(false);
   }
   
   const renderResults = (type: 'profile' | 'repo') => {
