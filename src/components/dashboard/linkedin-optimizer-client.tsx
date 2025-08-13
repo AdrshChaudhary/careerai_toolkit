@@ -48,7 +48,6 @@ export function LinkedInOptimizerClient() {
             summaryFeedback: "Your 'About' section provides a good overview. To make it more engaging, tell a story about your professional journey and what drives you. Break up long paragraphs into smaller, scannable chunks.",
             experienceFeedback: "You've listed your responsibilities well. Now, focus on accomplishments. Use the STAR method (Situation, Task, Action, Result) to describe your achievements with quantifiable results.",
             skillsFeedback: "You have a strong list of skills. Make sure your top 5 skills are the most relevant to the roles you're targeting. Also, actively seek endorsements for your key skills from your connections.",
-            profilePictureFeedback: "Your profile picture is professional. Ensure it's a recent, high-resolution headshot where you appear friendly and approachable.",
             activityFeedback: "Your activity on LinkedIn is low. Try to post relevant content, share articles, and engage with others' posts at least a few times a week to increase your visibility.",
             keywordSuggestions: "Consider adding these keywords to your profile to improve your visibility in recruiter searches: 'Cloud Computing', 'Agile Methodologies', 'System Design', 'Microservices'.",
             overallSuggestions: "Your profile is solid. The biggest areas for improvement are quantifying your achievements in the experience section and increasing your activity on the platform. A small amount of consistent effort here will go a long way."
@@ -130,10 +129,6 @@ export function LinkedInOptimizerClient() {
                   <AccordionItem value="summary">
                     <AccordionTrigger>Summary Feedback</AccordionTrigger>
                     <AccordionContent>{analysisResult.summaryFeedback}</AccordionContent>
-                  </AccordionItem>
-                   <AccordionItem value="profilePicture">
-                    <AccordionTrigger>Profile Picture</AccordionTrigger>
-                    <AccordionContent>{analysisResult.profilePictureFeedback}</AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="experience">
                     <AccordionTrigger>Experience Feedback</AccordionTrigger>
