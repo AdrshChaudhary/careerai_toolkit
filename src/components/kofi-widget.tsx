@@ -15,15 +15,19 @@ declare global {
 export function KofiWidget() {
     const pathname = usePathname();
 
+    const kofiConfig = {
+        'type': 'floating-chat',
+        'floating-chat.donateButton.text': 'Support me',
+        'floating-chat.donateButton.background-color': '#794bc4',
+        'floating-chat.donateButton.text-color': '#fff',
+        'floating-chat.chatButton.position.bottom': '1rem',
+        'floating-chat.chatButton.position.right': '1rem',
+    };
+
     useEffect(() => {
         // Ensure the widget is redrawn on route changes if it exists
         if (window.kofiWidgetOverlay) {
-            window.kofiWidgetOverlay.draw('aadarshchaudhary', {
-                'type': 'floating-chat',
-                'floating-chat.donateButton.text': 'Support me',
-                'floating-chat.donateButton.background-color': '#794bc4',
-                'floating-chat.donateButton.text-color': '#fff'
-            });
+            window.kofiWidgetOverlay.draw('aadarshchaudhary', kofiConfig);
         }
     }, [pathname]); // Re-run the effect when the path changes
 
@@ -34,12 +38,7 @@ export function KofiWidget() {
                 strategy="lazyOnload"
                 onLoad={() => {
                     if (window.kofiWidgetOverlay) {
-                        window.kofiWidgetOverlay.draw('aadarshchaudhary', {
-                            'type': 'floating-chat',
-                            'floating-chat.donateButton.text': 'Support me',
-                            'floating-chat.donateButton.background-color': '#794bc4',
-                            'floating-chat.donateButton.text-color': '#fff'
-                        });
+                        window.kofiWidgetOverlay.draw('aadarshchaudhary', kofiConfig);
                     }
                 }}
             />
