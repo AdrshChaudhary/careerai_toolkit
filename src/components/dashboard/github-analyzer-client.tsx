@@ -96,7 +96,7 @@ export function GithubAnalyzerClient() {
         <TabsTrigger value="profile">Profile Analyzer</TabsTrigger>
         <TabsTrigger value="repository">Repository Analyzer</TabsTrigger>
       </TabsList>
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="mt-6 flex flex-col gap-6">
         <TabsContent value="profile" className="m-0">
           <Card>
             <CardHeader>
@@ -149,7 +149,7 @@ export function GithubAnalyzerClient() {
             </CardContent>
           </Card>
         </TabsContent>
-         <Card className="md:col-start-2 md:row-start-1">
+        <Card>
             <CardHeader>
                 <CardTitle>Analysis Results</CardTitle>
                 <CardDescription>

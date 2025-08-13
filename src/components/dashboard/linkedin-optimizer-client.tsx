@@ -50,7 +50,7 @@ export function LinkedInOptimizerClient() {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
           <CardTitle>LinkedIn Optimizer</CardTitle>

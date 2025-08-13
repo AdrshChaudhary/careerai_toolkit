@@ -120,8 +120,8 @@ export function ResumeAnalyzerClient() {
 
   return (
      <Tabs defaultValue="comprehensive" onValueChange={setActiveTab} className="w-full">
-      <div className="grid gap-6 md:grid-cols-2">
-      <Card className="md:col-span-1">
+      <div className="flex flex-col gap-6">
+      <Card>
         <TabsList className="grid w-full grid-cols-2 mt-6 mx-auto max-w-[calc(100%-2rem)]">
             <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
             <TabsTrigger value="jobDescription">Job Description</TabsTrigger>
