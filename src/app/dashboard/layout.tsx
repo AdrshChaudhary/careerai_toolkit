@@ -20,7 +20,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { FileText, Linkedin, Github, Loader2, MailCheck, AlertCircle, LayoutGrid } from 'lucide-react';
+import { FileText, Linkedin, Github, Loader2, MailCheck, AlertCircle, LayoutGrid, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -83,6 +83,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/dashboard/resume-analyzer', icon: FileText, label: 'Resume Analyzer' },
     { href: '/dashboard/linkedin-optimizer', icon: Linkedin, label: 'LinkedIn Optimizer' },
     { href: '/dashboard/github-analyzer', icon: Github, label: 'GitHub Analyzer' },
+    { href: '/dashboard/contact-support', icon: LifeBuoy, label: 'Contact Support' },
   ];
 
   return (
@@ -125,6 +126,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </SidebarMenuButton>
                     </SidebarMenuItem>
              </SidebarGroup>
+              <SidebarGroup>
+                <SidebarGroupLabel>Support</SidebarGroupLabel>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/contact-support')} tooltip={{ children: 'Contact Support', side: 'right' }}>
+                        <Link href="/dashboard/contact-support"><LifeBuoy/><span>Contact Support</span></Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarGroup>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
