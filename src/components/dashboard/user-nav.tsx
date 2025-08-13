@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -97,19 +96,6 @@ export function UserNav({ user, signOut, isInHeader = false }: UserNavProps) {
         <p className="truncate font-medium">{user.displayName}</p>
         <p className="truncate text-xs text-muted-foreground">{user.email}</p>
       </div>
-       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-           <Button variant="ghost" size="icon" className="h-7 w-7">
-            <LogOut className="h-4 w-4"/>
-          </Button>
-        </DropdownMenuTrigger>
-         <DropdownMenuContent className="w-56" align="end" forceMount>
-           <DropdownMenuItem onClick={signOut}>
-             <LogOut className="mr-2 h-4 w-4" />
-             <span>Log out</span>
-           </DropdownMenuItem>
-         </DropdownMenuContent>
-       </DropdownMenu>
     </div>
   );
 }
