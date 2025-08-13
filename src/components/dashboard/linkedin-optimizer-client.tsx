@@ -16,15 +16,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { readAndEncodeFile } from '@/lib/utils';
+import { analyzeLinkedInProfile, LinkedInAnalysisOutput } from '@/ai/flows/linkedin-optimizer-flow';
 
 const formSchema = z.object({
-  profile: z.any().refine((file) => file?.length == 1, 'LinkedIn profile PDF is required.'),
+  profile: z.any().refine((files) => files?.length == 1, 'LinkedIn profile PDF is required.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export function LinkedInOptimizerClient() {
-  const [analysisResult, setAnalysisResult] = useState<any | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<LinkedInAnalysisOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -41,19 +42,23 @@ export function LinkedInOptimizerClient() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    setTimeout(() => {
-        setAnalysisResult({
-            profileStrengthScore: 78,
-            headlineFeedback: "Your headline is good, but could be more impactful. Try adding a specific achievement or a key skill. For example: 'Senior Software Engineer at TechCorp | Building Scalable Web Applications with React & Node.js'",
-            summaryFeedback: "Your 'About' section provides a good overview. To make it more engaging, tell a story about your professional journey and what drives you. Break up long paragraphs into smaller, scannable chunks.",
-            experienceFeedback: "You've listed your responsibilities well. Now, focus on accomplishments. Use the STAR method (Situation, Task, Action, Result) to describe your achievements with quantifiable results.",
-            skillsFeedback: "You have a strong list of skills. Make sure your top 5 skills are the most relevant to the roles you're targeting. Also, actively seek endorsements for your key skills from your connections.",
-            activityFeedback: "Your activity on LinkedIn is low. Try to post relevant content, share articles, and engage with others' posts at least a few times a week to increase your visibility.",
-            keywordSuggestions: "Consider adding these keywords to your profile to improve your visibility in recruiter searches: 'Cloud Computing', 'Agile Methodologies', 'System Design', 'Microservices'.",
-            overallSuggestions: "Your profile is solid. The biggest areas for improvement are quantifying your achievements in the experience section and increasing your activity on the platform. A small amount of consistent effort here will go a long way."
-        });
+    try {
+      const profilePdf = values.profile[0];
+      const profilePdfDataUri = await readAndEncodeFile(profilePdf);
+      
+      const result = await analyzeLinkedInProfile({ profilePdfDataUri });
+      setAnalysisResult(result);
+
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: 'destructive',
+        title: 'Analysis Failed',
+        description: 'There was an error analyzing your profile. Please try again.',
+      });
+    } finally {
         setIsLoading(false);
-    }, 2000);
+    }
   }
 
   return (
