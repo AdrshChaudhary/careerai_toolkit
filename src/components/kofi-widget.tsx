@@ -8,6 +8,8 @@ declare global {
     interface Window {
         kofiWidgetOverlay: {
             draw: (username: string, config: object) => void;
+            getIframe: () => HTMLIFrameElement | null;
+            remove: () => void;
         };
     }
 }
@@ -15,6 +17,7 @@ declare global {
 export function KofiWidget() {
     const pathname = usePathname();
 
+    const kofiId = 'aadarshchaudhary';
     const kofiConfig = {
         'type': 'floating-chat',
         'floating-chat.donateButton.text': 'Support me',
@@ -26,22 +29,27 @@ export function KofiWidget() {
 
     useEffect(() => {
         // Ensure the widget is redrawn on route changes if it exists
+        // This is a robust way to handle SPAs with third-party widgets
         if (window.kofiWidgetOverlay) {
-            window.kofiWidgetOverlay.draw('aadarshchaudhary', kofiConfig);
+             // To prevent multiple widgets from being drawn, we can remove the old one first.
+            const existingIframe = document.getElementById('kofi-iframe-container');
+            if (existingIframe) {
+                existingIframe.remove();
+            }
+            window.kofiWidgetOverlay.draw(kofiId, kofiConfig);
         }
-    }, [pathname, kofiConfig]); // Re-run the effect when the path or config changes
+    }, [pathname]);
 
     return (
-        <>
-            <Script
-                src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"
-                strategy="lazyOnload"
-                onLoad={() => {
-                    if (window.kofiWidgetOverlay) {
-                        window.kofiWidgetOverlay.draw('aadarshchaudhary', kofiConfig);
-                    }
-                }}
-            />
-        </>
+        <Script
+            id="kofi-widget-script"
+            src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"
+            strategy="lazyOnload"
+            onLoad={() => {
+                if (window.kofiWidgetOverlay) {
+                    window.kofiWidgetOverlay.draw(kofiId, kofiConfig);
+                }
+            }}
+        />
     );
 }
