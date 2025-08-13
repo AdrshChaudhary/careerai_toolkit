@@ -63,7 +63,7 @@ export function UserNav({ user, signOut, isInHeader = false }: UserNavProps) {
     return (
        <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Button variant="ghost" className="relative h-8 w-8 rounded-full transition-all duration-300 hover:ring-2 hover:ring-primary hover:ring-offset-2 hover:ring-offset-background">
             <Avatar className="h-8 w-8">
               <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'user'} />
               <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
