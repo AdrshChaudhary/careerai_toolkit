@@ -2,7 +2,6 @@
 
 import Script from 'next/script';
 import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 
 declare global {
     interface Window {
@@ -15,8 +14,6 @@ declare global {
 }
 
 export function KofiWidget() {
-    const pathname = usePathname();
-
     const kofiId = 'aadarshchaudhary';
     const kofiConfig = {
         'type': 'floating-chat',
@@ -28,17 +25,25 @@ export function KofiWidget() {
     };
 
     useEffect(() => {
-        // Ensure the widget is redrawn on route changes if it exists
-        // This is a robust way to handle SPAs with third-party widgets
-        if (window.kofiWidgetOverlay) {
-             // To prevent multiple widgets from being drawn, we can remove the old one first.
-            const existingIframe = document.getElementById('kofi-iframe-container');
-            if (existingIframe) {
-                existingIframe.remove();
+        // This function will only run on the client side, after the component mounts.
+        const drawWidget = () => {
+            if (window.kofiWidgetOverlay) {
+                 // To prevent multiple widgets from being drawn, we can remove the old one first.
+                const existingIframe = document.getElementById('kofi-iframe-container');
+                if (existingIframe) {
+                    existingIframe.remove();
+                }
+                window.kofiWidgetOverlay.draw(kofiId, kofiConfig);
             }
-            window.kofiWidgetOverlay.draw(kofiId, kofiConfig);
+        };
+
+        // If the script is already loaded, draw the widget immediately.
+        if (document.readyState === 'complete' && window.kofiWidgetOverlay) {
+            drawWidget();
         }
-    }, [pathname]);
+        
+        // The onload event on the Script component will handle drawing when the script loads.
+    }, []);
 
     return (
         <Script
