@@ -15,8 +15,6 @@ import { Loader2, Sparkles, Linkedin, Lightbulb } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { readAndEncodeFile } from '@/lib/utils';
-import { analyzeLinkedInProfile, LinkedInAnalysisOutput } from '@/ai/flows/linkedin-optimizer-flow';
 
 const formSchema = z.object({
   profile: z.any().refine((files) => files?.length == 1, 'LinkedIn profile PDF is required.'),
@@ -25,7 +23,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function LinkedInOptimizerClient() {
-  const [analysisResult, setAnalysisResult] = useState<LinkedInAnalysisOutput | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -42,23 +40,20 @@ export function LinkedInOptimizerClient() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    try {
-      const profilePdf = values.profile[0];
-      const profilePdfDataUri = await readAndEncodeFile(profilePdf);
-      
-      const result = await analyzeLinkedInProfile({ profilePdfDataUri });
-      setAnalysisResult(result);
-
-    } catch (error) {
-      console.error(error);
-      toast({
-        variant: 'destructive',
-        title: 'Analysis Failed',
-        description: 'There was an error analyzing your profile. Please try again.',
-      });
-    } finally {
+    // This part will be implemented with Genkit later.
+    setTimeout(() => {
+        setAnalysisResult({
+            profileStrengthScore: 88,
+            headlineFeedback: "Your headline is strong and clearly states your current role. To make it more impactful, consider adding a key achievement or a specific area of expertise. For example: 'Senior Software Engineer at TechCorp | Building Scalable FinTech Solutions'.",
+            summaryFeedback: "Your 'About' section provides a good overview of your experience. To enhance it, try to tell a more compelling story. Start with a powerful opening statement, and weave in your key skills and accomplishments naturally. Using first-person narrative ('I am passionate about...') can make it more engaging.",
+            experienceFeedback: "You've listed your responsibilities well. To take it to the next level, reframe your bullet points to focus on your achievements using the STAR method (Situation, Task, Action, Result). For example, instead of 'Developed new features,' try 'Led the development of a new feature (Action) that increased user engagement by 20% (Result).'",
+            skillsFeedback: "You have a comprehensive list of skills. Ensure your top 5 skills are the most relevant ones for the roles you are targeting. Actively seek endorsements from your connections for your most important skills to add credibility.",
+            activityFeedback: "Your activity on LinkedIn is a bit low. Try to engage more by sharing relevant articles, commenting on posts from industry leaders, and posting updates about your own projects or learnings. A consistent presence can significantly boost your visibility.",
+            keywordSuggestions: "Cloud Computing, SaaS, Microservices, Agile Methodologies, FinTech, API Design",
+            overallSuggestions: "Your profile is solid, but with a few tweaks, it can be outstanding. Focus on quantifying your achievements in the experience section and increasing your engagement on the platform. Tailoring your headline and summary will also help you attract the right opportunities.",
+        });
         setIsLoading(false);
-    }
+    }, 2000);
   }
 
   return (
