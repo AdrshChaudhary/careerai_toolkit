@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/icons';
-import { ArrowRight, FileText, Linkedin, Github, Instagram, Twitter, PenSquare, Globe } from 'lucide-react';
+import { ArrowRight, FileText, Linkedin, Github, Instagram, Twitter as XIcon, PenSquare, Globe } from 'lucide-react';
+import { Footer } from '../footer';
 
 const features = [
   {
@@ -28,7 +29,7 @@ const features = [
 const socialLinks = [
     { name: 'LinkedIn', href: 'https://www.linkedin.com/in/aadarshchaudhary/', icon: Linkedin },
     { name: 'Instagram', href: 'https://www.instagram.com/aadar.ssshhh/', icon: Instagram },
-    { name: 'Twitter', href: 'https://x.com/ImAadrsh', icon: Twitter },
+    { name: 'Twitter', href: 'https://x.com/ImAadrsh', icon: XIcon },
     { name: 'GitHub', href: 'https://github.com/AdrshChaudhary', icon: Github },
     { name: 'Medium', href: 'https://medium.com/@im.aadrsh', icon: PenSquare },
     { name: 'Portfolio', href: 'https://aadrsh.netlify.app/', icon: Globe },
@@ -119,21 +120,7 @@ export function LandingPage() {
         </section>
       </main>
       
-      <footer className="py-6 md:px-8 md:py-0">
-        <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-          <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Made by Aadarsh Chaudhary
-          </p>
-           <div className="flex items-center gap-4">
-            {socialLinks.map((link) => (
-              <Link key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
-                <link.icon className="h-5 w-5" />
-                <span className="sr-only">{link.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -23,6 +23,7 @@ import Link from 'next/link';
 import { FileText, Linkedin, Github, Loader2, MailCheck, AlertCircle, LayoutGrid, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Footer } from '@/components/footer';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut, reloadUser } = useAuth();
@@ -152,7 +153,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <UserNav user={user} signOut={signOut} isInHeader={true} />
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
+        <main className="flex flex-1 flex-col overflow-y-auto p-4 sm:p-6">
+          <div className="flex-grow">{children}</div>
+          <Footer />
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
