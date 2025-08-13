@@ -58,6 +58,17 @@ export function LinkedInOptimizerClient() {
             <CardDescription>Upload a PDF of your LinkedIn profile to receive AI-driven optimization tips.</CardDescription>
           </CardHeader>
           <CardContent>
+             <Alert className="mb-6">
+                <Lightbulb className="h-4 w-4" />
+                <AlertTitle>How to Download Your LinkedIn Profile</AlertTitle>
+                <AlertDescription>
+                    <ol className="list-decimal list-inside space-y-1 mt-2">
+                        <li>Go to your LinkedIn profile page.</li>
+                        <li>Click the <strong>More</strong> button in your introduction card.</li>
+                        <li>Select <strong>Save to PDF</strong> from the dropdown menu.</li>
+                    </ol>
+                </AlertDescription>
+            </Alert>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
