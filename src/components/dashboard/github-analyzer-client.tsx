@@ -45,27 +45,46 @@ export function GithubAnalyzerClient() {
     if (!user) return;
     setIsProfileLoading(true);
     setProfileResult(null);
-    setTimeout(() => {
-        setProfileResult({
-            name: "Linus Torvalds",
-            avatarUrl: "https://avatars.githubusercontent.com/u/1024025?v=4",
-            repoCount: 6,
-            followers: 197000,
-            following: 0,
-            techStack: "Primary technologies identified: C, Assembly, and Shell scripting. You have a deep focus on systems-level programming and operating systems.",
-            codeQualityInsights: "Code is exceptionally well-structured and follows strict coding standards, which is expected for kernel development. There is a strong emphasis on performance and stability.",
-            overallSuggestions: "Your profile is legendary. For others looking to build a similar profile, focus on contributing to large-scale, impactful open-source projects. Clear and concise commit messages are key.",
-            languageDistributionChart: "pie title Language Distribution\n    \"C\": 85\n    \"Assembly\": 10\n    \"Shell\": 5",
-            repositoryCreationActivityChart: "gantt\n    title Repository Creation Activity\n    dateFormat  YYYY-MM-DD\n    section Core Projects\n    Linux Kernel     :done,    des1, 1991-08-25, 12000d\n    Subsurface       :active,  des2, 2011-10-01, 4000d"
+
+    try {
+      const response = await fetch(`https://api.github.com/users/${values.githubUsername}`);
+      if (!response.ok) {
+        throw new Error('User not found or API limit exceeded.');
+      }
+      const data = await response.json();
+
+      // We set the real data for basic profile info
+      // and keep the mock data for AI-based analysis for now.
+      setProfileResult({
+          name: data.name || data.login,
+          avatarUrl: data.avatar_url,
+          repoCount: data.public_repos,
+          followers: data.followers,
+          following: data.following,
+          techStack: "Primary technologies identified: C, Assembly, and Shell scripting. You have a deep focus on systems-level programming and operating systems.",
+          codeQualityInsights: "Code is exceptionally well-structured and follows strict coding standards, which is expected for kernel development. There is a strong emphasis on performance and stability.",
+          overallSuggestions: "Your profile is legendary. For others looking to build a similar profile, focus on contributing to large-scale, impactful open-source projects. Clear and concise commit messages are key.",
+          languageDistributionChart: "pie title Language Distribution\n    \"C\": 85\n    \"Assembly\": 10\n    \"Shell\": 5",
+          repositoryCreationActivityChart: "gantt\n    title Repository Creation Activity\n    dateFormat  YYYY-MM-DD\n    section Core Projects\n    Linux Kernel     :done,    des1, 1991-08-25, 12000d\n    Subsurface       :active,  des2, 2011-10-01, 4000d"
+      });
+
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Error Fetching Profile',
+            description: 'Could not fetch the GitHub profile. Please check the username and try again.',
         });
+        setProfileResult(null);
+    } finally {
         setIsProfileLoading(false);
-    }, 2000);
+    }
   }
 
   async function onRepoSubmit(values: RepoFormValues) {
     if (!user) return;
     setIsRepoLoading(true);
     setRepoResult(null);
+    // This part will be implemented with Genkit later.
     setTimeout(() => {
         setRepoResult({
             purposeFeedback: "The repository's purpose is crystal clear from the README and project documentation. It effectively communicates the project's massive scope and goals.",
