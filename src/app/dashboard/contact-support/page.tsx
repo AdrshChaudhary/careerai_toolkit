@@ -73,53 +73,55 @@ export default function ContactSupportPage() {
   }
 
   return (
-    <div className="flex justify-center">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle>Contact Support</CardTitle>
-          <CardDescription>Have a question or need help? Fill out the form below and we'll get back to you.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="subject"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subject</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Issue with Resume Analyzer" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Message</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Please describe your issue or question in detail..."
-                        className="min-h-[150px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" disabled={isLoading || !user} className="w-full">
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                Submit
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+    <div className="flex w-full justify-center">
+      <div className="w-full max-w-2xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>Contact Support</CardTitle>
+            <CardDescription>Have a question or need help? Fill out the form below and we'll get back to you.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subject</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Issue with Resume Analyzer" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Message</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Please describe your issue or question in detail..."
+                          className="min-h-[150px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" disabled={isLoading || !user} className="w-full">
+                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                  Submit
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

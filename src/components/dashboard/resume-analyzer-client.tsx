@@ -119,165 +119,167 @@ export function ResumeAnalyzerClient() {
   }
 
   return (
-     <Tabs defaultValue="comprehensive" onValueChange={setActiveTab} className="w-full">
-      <div className="flex flex-col gap-6">
-      <Card>
-        <TabsList className="grid w-full grid-cols-2 mt-6 mx-auto max-w-[calc(100%-2rem)]">
-            <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
-            <TabsTrigger value="jobDescription">Job Description</TabsTrigger>
-        </TabsList>
-        <TabsContent value="comprehensive" className="m-0">
-          <CardHeader>
-            <CardTitle>Comprehensive Analysis</CardTitle>
-            <CardDescription>Get a general analysis of your resume's strengths and weaknesses.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...comprehensiveForm}>
-              <form onSubmit={comprehensiveForm.handleSubmit(onComprehensiveSubmit)} className="space-y-6">
-                <FormField
-                  control={comprehensiveForm.control}
-                  name="resume"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Resume PDF</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept="application/pdf"
-                          onChange={(e) => field.onChange(e.target.files)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="mr-2 h-4 w-4" />
-                  )}
-                  Analyze Resume
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </TabsContent>
-        <TabsContent value="jobDescription" className="m-0">
-          <CardHeader>
-            <CardTitle>Job Description Based</CardTitle>
-            <CardDescription>Analyze your resume against a specific job description for an ATS score.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...jobDescriptionForm}>
-              <form onSubmit={jobDescriptionForm.handleSubmit(onJobDescriptionSubmit)} className="space-y-6">
-                 <FormField
-                  control={jobDescriptionForm.control}
-                  name="resume"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Resume PDF</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept="application/pdf"
-                          onChange={(e) => field.onChange(e.target.files)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                    control={jobDescriptionForm.control}
-                    name="jobDescription"
+    <div className="flex w-full justify-center">
+      <Tabs defaultValue="comprehensive" onValueChange={setActiveTab} className="w-full max-w-2xl">
+        <div className="flex flex-col gap-6">
+        <Card>
+          <TabsList className="grid w-full grid-cols-2 mt-6 mx-auto max-w-[calc(100%-2rem)]">
+              <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
+              <TabsTrigger value="jobDescription">Job Description</TabsTrigger>
+          </TabsList>
+          <TabsContent value="comprehensive" className="m-0">
+            <CardHeader>
+              <CardTitle>Comprehensive Analysis</CardTitle>
+              <CardDescription>Get a general analysis of your resume's strengths and weaknesses.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...comprehensiveForm}>
+                <form onSubmit={comprehensiveForm.handleSubmit(onComprehensiveSubmit)} className="space-y-6">
+                  <FormField
+                    control={comprehensiveForm.control}
+                    name="resume"
                     render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Job Description</FormLabel>
+                      <FormItem>
+                        <FormLabel>Resume PDF</FormLabel>
                         <FormControl>
-                        <Textarea
-                            placeholder="Paste the full job description here..."
-                            className="min-h-[200px]"
-                            {...field}
-                        />
+                          <Input
+                            type="file"
+                            accept="application/pdf"
+                            onChange={(e) => field.onChange(e.target.files)}
+                          />
                         </FormControl>
                         <FormMessage />
-                    </FormItem>
+                      </FormItem>
                     )}
-                />
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="mr-2 h-4 w-4" />
+                  />
+                  <Button type="submit" disabled={isLoading} className="w-full">
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-2 h-4 w-4" />
+                    )}
+                    Analyze Resume
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </TabsContent>
+          <TabsContent value="jobDescription" className="m-0">
+            <CardHeader>
+              <CardTitle>Job Description Based</CardTitle>
+              <CardDescription>Analyze your resume against a specific job description for an ATS score.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...jobDescriptionForm}>
+                <form onSubmit={jobDescriptionForm.handleSubmit(onJobDescriptionSubmit)} className="space-y-6">
+                  <FormField
+                    control={jobDescriptionForm.control}
+                    name="resume"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Resume PDF</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept="application/pdf"
+                            onChange={(e) => field.onChange(e.target.files)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                      control={jobDescriptionForm.control}
+                      name="jobDescription"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Job Description</FormLabel>
+                          <FormControl>
+                          <Textarea
+                              placeholder="Paste the full job description here..."
+                              className="min-h-[200px]"
+                              {...field}
+                          />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+                  <Button type="submit" disabled={isLoading} className="w-full">
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-2 h-4 w-4" />
+                    )}
+                    Analyze Resume
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </TabsContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Analysis Results</CardTitle>
+            <CardDescription>Your resume feedback will appear here.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-muted-foreground">Analyzing your resume... This may take a moment.</p>
+              </div>
+            )}
+            {analysisResult ? (
+              <div className="space-y-6">
+                  {analysisResult.atsScore > 0 && (
+                      <div className="flex justify-center">
+                          <ScoreGauge score={analysisResult.atsScore} />
+                      </div>
                   )}
-                  Analyze Resume
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </TabsContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Analysis Results</CardTitle>
-          <CardDescription>Your resume feedback will appear here.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              <p className="text-muted-foreground">Analyzing your resume... This may take a moment.</p>
-            </div>
-          )}
-          {analysisResult ? (
-            <div className="space-y-6">
-                {analysisResult.atsScore > 0 && (
-                    <div className="flex justify-center">
-                        <ScoreGauge score={analysisResult.atsScore} />
-                    </div>
+                {analysisResult.comprehensiveAnalysis && (
+                  <Alert>
+                      <Bot className="h-4 w-4" />
+                      <AlertTitle>Comprehensive Analysis</AlertTitle>
+                      <AlertDescription>{analysisResult.comprehensiveAnalysis}</AlertDescription>
+                  </Alert>
                 )}
-               {analysisResult.comprehensiveAnalysis && (
+                <Accordion type="single" collapsible defaultValue="summary" className="w-full">
+                  <AccordionItem value="summary">
+                    <AccordionTrigger>Summary Feedback</AccordionTrigger>
+                    <AccordionContent>{analysisResult.summaryFeedback}</AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="skills">
+                    <AccordionTrigger>Skills Feedback</AccordionTrigger>
+                    <AccordionContent>{analysisResult.skillsFeedback}</AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="experience">
+                    <AccordionTrigger>Experience Feedback</AccordionTrigger>
+                    <AccordionContent>{analysisResult.experienceFeedback}</AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="education">
+                    <AccordionTrigger>Education Feedback</AccordionTrigger>
+                    <AccordionContent>{analysisResult.educationFeedback}</AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+                
                 <Alert>
-                    <Bot className="h-4 w-4" />
-                    <AlertTitle>Comprehensive Analysis</AlertTitle>
-                    <AlertDescription>{analysisResult.comprehensiveAnalysis}</AlertDescription>
+                    <Briefcase className="h-4 w-4" />
+                    <AlertTitle>Suggested Job Roles</AlertTitle>
+                    <AlertDescription>{analysisResult.jobRoleSuggestions}</AlertDescription>
                 </Alert>
-               )}
-              <Accordion type="single" collapsible defaultValue="summary" className="w-full">
-                <AccordionItem value="summary">
-                  <AccordionTrigger>Summary Feedback</AccordionTrigger>
-                  <AccordionContent>{analysisResult.summaryFeedback}</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="skills">
-                  <AccordionTrigger>Skills Feedback</AccordionTrigger>
-                  <AccordionContent>{analysisResult.skillsFeedback}</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="experience">
-                  <AccordionTrigger>Experience Feedback</AccordionTrigger>
-                  <AccordionContent>{analysisResult.experienceFeedback}</AccordionContent>
-                </AccordionItem>
-                 <AccordionItem value="education">
-                  <AccordionTrigger>Education Feedback</AccordionTrigger>
-                  <AccordionContent>{analysisResult.educationFeedback}</AccordionContent>
-                </AccordionItem>
-              </Accordion>
-              
-               <Alert>
-                  <Briefcase className="h-4 w-4" />
-                  <AlertTitle>Suggested Job Roles</AlertTitle>
-                  <AlertDescription>{analysisResult.jobRoleSuggestions}</AlertDescription>
-              </Alert>
-            </div>
-          ) : !isLoading && (
-             <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
-               <FileText className="h-12 w-12 text-muted-foreground" />
-               <p className="text-muted-foreground">Your results will be shown here after analysis.</p>
-             </div>
-          )}
-        </CardContent>
-      </Card>
-      </div>
-    </Tabs>
+              </div>
+            ) : !isLoading && (
+              <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
+                <FileText className="h-12 w-12 text-muted-foreground" />
+                <p className="text-muted-foreground">Your results will be shown here after analysis.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        </div>
+      </Tabs>
+    </div>
   );
 }

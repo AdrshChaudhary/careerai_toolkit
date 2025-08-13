@@ -91,76 +91,78 @@ export function GithubAnalyzerClient() {
 
 
   return (
-    <Tabs defaultValue="profile" onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="profile">Profile Analyzer</TabsTrigger>
-        <TabsTrigger value="repository">Repository Analyzer</TabsTrigger>
-      </TabsList>
-      <div className="mt-6 flex flex-col gap-6">
-        <TabsContent value="profile" className="m-0">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Analyzer</CardTitle>
-              <CardDescription>Enter a GitHub username to analyze their profile.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...profileForm}>
-                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-                  <FormField control={profileForm.control} name="githubUsername" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>GitHub Username</FormLabel>
-                        <FormControl><Input placeholder="e.g., torvalds" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={isProfileLoading} className="w-full">
-                    {isProfileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Analyze Profile
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="repository" className="m-0">
-          <Card>
-            <CardHeader>
-              <CardTitle>Repository Analyzer</CardTitle>
-              <CardDescription>Enter a public GitHub repository URL for analysis.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...repoForm}>
-                <form onSubmit={repoForm.handleSubmit(onRepoSubmit)} className="space-y-4">
-                  <FormField control={repoForm.control} name="repositoryUrl" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Repository URL</FormLabel>
-                        <FormControl><Input placeholder="https://github.com/facebook/react" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={isRepoLoading} className="w-full">
-                    {isRepoLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Analyze Repository
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <Card>
-            <CardHeader>
-                <CardTitle>Analysis Results</CardTitle>
-                <CardDescription>
-                    {activeTab === 'profile' ? 'Profile insights will appear here.' : 'Repository insights will appear here.'}
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-               {renderResults(activeTab as 'profile' | 'repo')}
-            </CardContent>
-        </Card>
-      </div>
-    </Tabs>
+    <div className="flex w-full justify-center">
+        <Tabs defaultValue="profile" onValueChange={setActiveTab} className="w-full max-w-2xl">
+        <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="profile">Profile Analyzer</TabsTrigger>
+            <TabsTrigger value="repository">Repository Analyzer</TabsTrigger>
+        </TabsList>
+        <div className="mt-6 flex flex-col gap-6">
+            <TabsContent value="profile" className="m-0">
+            <Card>
+                <CardHeader>
+                <CardTitle>Profile Analyzer</CardTitle>
+                <CardDescription>Enter a GitHub username to analyze their profile.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                <Form {...profileForm}>
+                    <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
+                    <FormField control={profileForm.control} name="githubUsername" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>GitHub Username</FormLabel>
+                            <FormControl><Input placeholder="e.g., torvalds" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="submit" disabled={isProfileLoading} className="w-full">
+                        {isProfileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Analyze Profile
+                    </Button>
+                    </form>
+                </Form>
+                </CardContent>
+            </Card>
+            </TabsContent>
+            <TabsContent value="repository" className="m-0">
+            <Card>
+                <CardHeader>
+                <CardTitle>Repository Analyzer</CardTitle>
+                <CardDescription>Enter a public GitHub repository URL for analysis.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                <Form {...repoForm}>
+                    <form onSubmit={repoForm.handleSubmit(onRepoSubmit)} className="space-y-4">
+                    <FormField control={repoForm.control} name="repositoryUrl" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Repository URL</FormLabel>
+                            <FormControl><Input placeholder="https://github.com/facebook/react" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="submit" disabled={isRepoLoading} className="w-full">
+                        {isRepoLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Analyze Repository
+                    </Button>
+                    </form>
+                </Form>
+                </CardContent>
+            </Card>
+            </TabsContent>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Analysis Results</CardTitle>
+                    <CardDescription>
+                        {activeTab === 'profile' ? 'Profile insights will appear here.' : 'Repository insights will appear here.'}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                {renderResults(activeTab as 'profile' | 'repo')}
+                </CardContent>
+            </Card>
+        </div>
+        </Tabs>
+    </div>
   );
 }
