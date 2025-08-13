@@ -18,7 +18,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { FileText, Linkedin, Github, Loader2, MailCheck, AlertCircle } from 'lucide-react';
+import { FileText, Linkedin, Github, Loader2, MailCheck, AlertCircle, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -77,6 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const menuItems = [
+    { href: '/dashboard', icon: LayoutGrid, label: 'Dashboard' },
     { href: '/dashboard/resume-analyzer', icon: FileText, label: 'Resume Analyzer' },
     { href: '/dashboard/linkedin-optimizer', icon: Linkedin, label: 'LinkedIn Optimizer' },
     { href: '/dashboard/github-analyzer', icon: Github, label: 'GitHub Analyzer' },
@@ -103,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith(item.href)}
+                  isActive={pathname === item.href}
                   tooltip={{ children: item.label, side: 'right' }}
                 >
                   <Link href={item.href}>
@@ -120,11 +121,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
-          <SidebarTrigger className="md:hidden" />
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
+           <SidebarTrigger />
           <div className="flex-1">
             <h1 className="text-lg font-semibold sm:text-xl">
-              {menuItems.find((item) => pathname.startsWith(item.href))?.label || 'Dashboard'}
+              {menuItems.find((item) => pathname === item.href)?.label || 'Dashboard'}
             </h1>
           </div>
         </header>

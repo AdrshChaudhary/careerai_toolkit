@@ -1,7 +1,10 @@
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FileText, Linkedin, Github, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/contexts/auth-context';
 
 const tools = [
   {
@@ -25,11 +28,14 @@ const tools = [
 ];
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const firstName = user?.displayName?.split(' ')[0] || 'User';
+
   return (
     <div className="flex flex-col gap-8">
-      <div className="text-center">
+      <div className="text-left">
         <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Welcome to Your CareerAI Toolkit
+          Welcome back, {firstName}!
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
           Leverage AI to supercharge your career. Start by selecting a tool below.
