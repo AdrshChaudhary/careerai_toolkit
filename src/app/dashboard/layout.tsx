@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="size-9 shrink-0" asChild>
+            <Button variant="ghost" size="icon" className="size-9 shrink-0 transition-all duration-300 hover:ring-2 hover:ring-primary hover:ring-offset-2 hover:ring-offset-background" asChild>
               <Link href="/dashboard">
                 <Icons.logo className="size-6 text-primary" />
               </Link>
