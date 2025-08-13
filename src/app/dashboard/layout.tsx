@@ -11,6 +11,8 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { UserNav } from '@/components/dashboard/user-nav';
 import { Icons } from '@/components/icons';
@@ -100,20 +102,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            {menuItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                  tooltip={{ children: item.label, side: 'right' }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
+             <SidebarMenuItem>
+                 <SidebarMenuButton asChild isActive={pathname === '/dashboard'} tooltip={{ children: 'Dashboard', side: 'right' }}>
+                    <Link href="/dashboard"><LayoutGrid/><span>Dashboard</span></Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+             </SidebarMenuItem>
+             <SidebarGroup>
+                <SidebarGroupLabel>Tools</SidebarGroupLabel>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/resume-analyzer')} tooltip={{ children: 'Resume Analyzer', side: 'right' }}>
+                            <Link href="/dashboard/resume-analyzer"><FileText/><span>Resume Analyzer</span></Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/linkedin-optimizer')} tooltip={{ children: 'LinkedIn Optimizer', side: 'right' }}>
+                            <Link href="/dashboard/linkedin-optimizer"><Linkedin/><span>LinkedIn Optimizer</span></Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                         <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/github-analyzer')} tooltip={{ children: 'GitHub Analyzer', side: 'right' }}>
+                            <Link href="/dashboard/github-analyzer"><Github/><span>GitHub Analyzer</span></Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+             </SidebarGroup>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -127,6 +138,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <h1 className="text-lg font-semibold sm:text-xl">
               {menuItems.find((item) => pathname === item.href)?.label || 'Dashboard'}
             </h1>
+          </div>
+          <div>
+            <UserNav user={user} signOut={signOut} />
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>

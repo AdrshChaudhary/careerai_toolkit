@@ -28,7 +28,9 @@ export function UserNav({ user, signOut }: UserNavProps) {
     return names.map((n) => n[0]).join('').substring(0,2).toUpperCase();
   };
 
-  if (state === 'collapsed') {
+  const isSidebarExpanded = state !== 'collapsed';
+
+  if (!isSidebarExpanded) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
