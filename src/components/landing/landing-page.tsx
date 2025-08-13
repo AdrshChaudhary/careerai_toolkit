@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/icons';
 import { ArrowRight, FileText, Linkedin, Github } from 'lucide-react';
-import { KofiWidget } from './kofi-widget';
 
 const features = [
   {
@@ -108,7 +107,6 @@ export function LandingPage() {
           <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
             Built by You. Powered by AI.
           </p>
-          <KofiWidget />
         </div>
       </footer>
     </div>
