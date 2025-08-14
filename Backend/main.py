@@ -169,6 +169,8 @@ async def call_gemini(prompt: str, max_retries: int = 3) -> str:
     
     # Try different model names in order of preference
     model_names = [
+        'gemini-2.5-flash',
+        'gemini-2.5-pro', 
         'gemini-1.5-flash',
         'gemini-1.5-pro', 
         'gemini-pro'
