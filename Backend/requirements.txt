@@ -5,3 +5,4 @@ pydantic
 PyMuPDF
 google-generativeai
 httpx
+python-dotenv
