@@ -18,7 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 // ★ NEW: Import ReactMarkdown
 import ReactMarkdown from 'react-markdown';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
 
 const formSchema = z.object({
   profile: z.any().refine((files) => files?.length == 1, 'LinkedIn profile PDF is required.'),

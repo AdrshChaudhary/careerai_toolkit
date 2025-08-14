@@ -21,7 +21,7 @@ import { Separator } from '../ui/separator';
 // ★ NEW: Import react-markdown
 import ReactMarkdown from 'react-markdown';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
 
 const profileSchema = z.object({
   githubUsername: z.string().min(1, 'GitHub username is required.'),
