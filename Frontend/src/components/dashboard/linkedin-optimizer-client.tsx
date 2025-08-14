@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from '@/contexts/auth-context';
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -16,11 +15,22 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ScoreGauge } from './score-gauge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
+// ★ NEW: Import ReactMarkdown
+import ReactMarkdown from 'react-markdown';
+
+const API_BASE_URL = 'http://localhost:8000/api';
+
 const formSchema = z.object({
   profile: z.any().refine((files) => files?.length == 1, 'LinkedIn profile PDF is required.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+function formatMarkdownList(text: string) {
+  if (!text) return '';
+  // Add a newline before each numbered list item if not already present
+  return text.replace(/(\d+\.\s+)/g, '\n$1');
+}
 
 export function LinkedInOptimizerClient() {
   const [analysisResult, setAnalysisResult] = useState<any | null>(null);
@@ -40,20 +50,31 @@ export function LinkedInOptimizerClient() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    // This part will be implemented with Genkit later.
-    setTimeout(() => {
-        setAnalysisResult({
-            profileStrengthScore: 88,
-            headlineFeedback: "Your headline is strong and clearly states your current role. To make it more impactful, consider adding a key achievement or a specific area of expertise. For example: 'Senior Software Engineer at TechCorp | Building Scalable FinTech Solutions'.",
-            summaryFeedback: "Your 'About' section provides a good overview of your experience. To enhance it, try to tell a more compelling story. Start with a powerful opening statement, and weave in your key skills and accomplishments naturally. Using first-person narrative ('I am passionate about...') can make it more engaging.",
-            experienceFeedback: "You've listed your responsibilities well. To take it to the next level, reframe your bullet points to focus on your achievements using the STAR method (Situation, Task, Action, Result). For example, instead of 'Developed new features,' try 'Led the development of a new feature (Action) that increased user engagement by 20% (Result).'",
-            skillsFeedback: "You have a comprehensive list of skills. Ensure your top 5 skills are the most relevant ones for the roles you are targeting. Actively seek endorsements from your connections for your most important skills to add credibility.",
-            activityFeedback: "Your activity on LinkedIn is a bit low. Try to engage more by sharing relevant articles, commenting on posts from industry leaders, and posting updates about your own projects or learnings. A consistent presence can significantly boost your visibility.",
-            keywordSuggestions: "Cloud Computing, SaaS, Microservices, Agile Methodologies, FinTech, API Design",
-            overallSuggestions: "Your profile is solid, but with a few tweaks, it can be outstanding. Focus on quantifying your achievements in the experience section and increasing your engagement on the platform. Tailoring your headline and summary will also help you attract the right opportunities.",
-        });
-        setIsLoading(false);
-    }, 2000);
+    const formData = new FormData();
+    formData.append('profile', values.profile[0]);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/linkedin-optimizer`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get analysis from the server.');
+      }
+
+      const result = await response.json();
+      setAnalysisResult(result);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Analysis Failed',
+        description: 'Could not get analysis. Please ensure the backend server is running and try again.',
+      });
+      setAnalysisResult(null);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -65,16 +86,16 @@ export function LinkedInOptimizerClient() {
             <CardDescription>Upload a PDF of your LinkedIn profile to receive AI-driven optimization tips.</CardDescription>
           </CardHeader>
           <CardContent>
-             <Alert className="mb-6">
-                <Lightbulb className="h-4 w-4" />
-                <AlertTitle>How to Download Your LinkedIn Profile</AlertTitle>
-                <AlertDescription>
-                    <ol className="list-decimal list-inside space-y-1 mt-2">
-                        <li>Go to your LinkedIn profile page.</li>
-                        <li>Click the <strong>More</strong> button in your introduction card.</li>
-                        <li>Select <strong>Save to PDF</strong> from the dropdown menu.</li>
-                    </ol>
-                </AlertDescription>
+            <Alert className="mb-6">
+              <Lightbulb className="h-4 w-4" />
+              <AlertTitle>How to Download Your LinkedIn Profile</AlertTitle>
+              <AlertDescription>
+                <ol className="list-decimal list-inside space-y-1 mt-2">
+                  <li>Go to your LinkedIn profile page.</li>
+                  <li>Click the <strong>More</strong> button in your introduction card.</li>
+                  <li>Select <strong>Save to PDF</strong> from the dropdown menu.</li>
+                </ol>
+              </AlertDescription>
             </Alert>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -85,11 +106,7 @@ export function LinkedInOptimizerClient() {
                     <FormItem>
                       <FormLabel>LinkedIn Profile PDF</FormLabel>
                       <FormControl>
-                        <Input
-                          type="file"
-                          accept="application/pdf"
-                          onChange={(e) => field.onChange(e.target.files)}
-                        />
+                        <Input type="file" accept="application/pdf" onChange={(e) => field.onChange(e.target.files)} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -124,35 +141,34 @@ export function LinkedInOptimizerClient() {
                 <Accordion type="single" collapsible defaultValue="headline" className="w-full">
                   <AccordionItem value="headline">
                     <AccordionTrigger>Headline Feedback</AccordionTrigger>
-                    <AccordionContent>{analysisResult.headlineFeedback}</AccordionContent>
+                    <AccordionContent><ReactMarkdown>{analysisResult.headlineFeedback}</ReactMarkdown></AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="summary">
                     <AccordionTrigger>Summary Feedback</AccordionTrigger>
-                    <AccordionContent>{analysisResult.summaryFeedback}</AccordionContent>
+                    <AccordionContent><ReactMarkdown>{analysisResult.summaryFeedback}</ReactMarkdown></AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="experience">
                     <AccordionTrigger>Experience Feedback</AccordionTrigger>
-                    <AccordionContent>{analysisResult.experienceFeedback}</AccordionContent>
+                    <AccordionContent><ReactMarkdown>{analysisResult.experienceFeedback}</ReactMarkdown></AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="skills">
                     <AccordionTrigger>Skills & Endorsements</AccordionTrigger>
-                    <AccordionContent>{analysisResult.skillsFeedback}</AccordionContent>
+                    <AccordionContent><ReactMarkdown>{analysisResult.skillsFeedback}</ReactMarkdown></AccordionContent>
                   </AccordionItem>
-                   <AccordionItem value="activity">
+                  <AccordionItem value="activity">
                     <AccordionTrigger>Activity & Engagement</AccordionTrigger>
-                    <AccordionContent>{analysisResult.activityFeedback}</AccordionContent>
+                    <AccordionContent><ReactMarkdown>{analysisResult.activityFeedback}</ReactMarkdown></AccordionContent>
                   </AccordionItem>
                 </Accordion>
-                
                 <Alert>
                   <Lightbulb className="h-4 w-4" />
                   <AlertTitle>Keyword Suggestions</AlertTitle>
-                  <AlertDescription>{analysisResult.keywordSuggestions}</AlertDescription>
+                  <AlertDescription><ReactMarkdown>{analysisResult.keywordSuggestions}</ReactMarkdown></AlertDescription>
                 </Alert>
                 <Alert>
                   <Lightbulb className="h-4 w-4" />
                   <AlertTitle>Overall Suggestions</AlertTitle>
-                  <AlertDescription>{analysisResult.overallSuggestions}</AlertDescription>
+                  <AlertDescription><ReactMarkdown>{formatMarkdownList(analysisResult.overallSuggestions)}</ReactMarkdown></AlertDescription>
                 </Alert>
               </div>
             ) : !isLoading && (
