@@ -349,6 +349,12 @@ REQUIRED_KEYS_LINKEDIN = [
     "keywordSuggestions", "overallSuggestions"
 ]
 
+REQUIRED_KEYS_REPO = [
+    "purposeFeedback",
+    "documentationQualityFeedback",
+    "overallSuggestions"
+]
+
 def ensure_all_keys(data: dict, required_keys: list):
     for key in required_keys:
         if key not in data or data[key] is None:
@@ -777,7 +783,7 @@ async def analyze_github_repository(request: GitHubRepoRequest):
         # Get response from Gemini
         response_text = await call_gemini(prompt)
         response_data = extract_clean_json(response_text)
-        
+        response_data = ensure_all_keys(response_data, REQUIRED_KEYS_REPO)
         logger.info("✅ GitHub repository analysis completed successfully")
         return GitHubRepoResponse(**response_data)
     
