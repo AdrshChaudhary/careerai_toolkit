@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from typing import List
 import asyncio
 from collections import Counter
-
+import re
 # Load environment variables from .env file
 load_dotenv()
 
@@ -62,6 +62,36 @@ else:
     except Exception as e:
         logger.error(f"❌ Error configuring Gemini API: {str(e)}")
         print(f"❌ Error configuring Gemini API: {str(e)}")
+
+def extract_clean_json(text: str):
+    """
+    Extracts and cleans JSON from LLM responses, removing markdown fences
+    and extra commentary.
+    """
+    if not text:
+        raise ValueError("Empty response from LLM")
+
+    # Remove leading/trailing whitespace
+    text = text.strip()
+
+    # Remove markdown code fences (```json ... ```)
+    text = re.sub(r"^```[a-zA-Z]*\n", "", text)
+    text = re.sub(r"\n```$", "", text)
+
+    # Extract the first valid JSON object
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match:
+        logger.error("❌ No JSON object found in LLM output")
+        raise ValueError("No JSON object found in LLM output")
+    
+    json_str = match.group(0)
+
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError as e:
+        logger.error(f"❌ JSON parsing failed: {e}")
+        logger.error(f"Problematic JSON string preview: {json_str[:500]}")
+        raise
 
 # Pydantic models for request/response validation
 class GitHubProfileRequest(BaseModel):
@@ -438,7 +468,7 @@ async def analyze_resume_job_description(
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = parse_json_response(response_text)
+        response_data = extract_clean_json(response_text)
 
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_JOB)        
@@ -501,7 +531,7 @@ async def analyze_resume_comprehensive(resume: UploadFile = File(...)):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = parse_json_response(response_text)
+        response_data = extract_clean_json(response_text)
 
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_COMPREHENSIVE)
@@ -561,7 +591,7 @@ async def optimize_linkedin_profile(profile: UploadFile = File(...)):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = parse_json_response(response_text)
+        response_data = extract_clean_json(response_text)
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_LINKEDIN)
         
@@ -677,7 +707,7 @@ async def analyze_github_profile(request: GitHubProfileRequest):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = parse_json_response(response_text)
+        response_data = extract_clean_json(response_text)
         response_data["languageDistribution"] = language_distribution_array
         response_data["languageDistributionChart"] = language_chart.strip()
         response_data["repositoryCreationActivity"] = activity_distribution_array
@@ -730,7 +760,7 @@ async def analyze_github_repository(request: GitHubRepoRequest):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = parse_json_response(response_text)
+        response_data = extract_clean_json(response_text)
         
         logger.info("✅ GitHub repository analysis completed successfully")
         return GitHubRepoResponse(**response_data)
