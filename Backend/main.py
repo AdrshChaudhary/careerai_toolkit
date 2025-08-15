@@ -63,9 +63,10 @@ else:
         logger.error(f"❌ Error configuring Gemini API: {str(e)}")
         print(f"❌ Error configuring Gemini API: {str(e)}")
 
-def extract_clean_json(text: str):
+async def extract_clean_json(text: str):
     """
     Extract and clean JSON from LLM responses, fixing common formatting issues.
+    Async version to allow LLM repair if needed.
     """
     if not text:
         raise ValueError("Empty response from LLM")
@@ -81,26 +82,35 @@ def extract_clean_json(text: str):
 
     json_str = match.group(0)
 
-    # Common fixes
-    json_str = json_str.replace("\n", " ")            # Remove raw newlines
-    json_str = re.sub(r'(?<!\\)"', '\\"', json_str)   # Escape stray quotes
-    json_str = re.sub(r",\s*}", "}", json_str)        # Remove trailing commas in objects
-    json_str = re.sub(r",\s*]", "]", json_str)        # Remove trailing commas in arrays
+    # Remove newlines & trailing commas
+    json_str = json_str.replace("\n", " ")
+    json_str = re.sub(r",\s*}", "}", json_str)
+    json_str = re.sub(r",\s*]", "]", json_str)
 
     try:
-        return json.loads(json_str)
+        # First parse
+        parsed = json.loads(json_str)
+
+        # If the parsed result is a string, it means it was double-encoded → parse again
+        if isinstance(parsed, str):
+            parsed = json.loads(parsed)
+
+        return parsed
     except json.JSONDecodeError as e:
         logger.error(f"❌ JSON parsing failed after cleaning: {e}")
         logger.error(f"Problematic JSON string preview: {json_str[:500]}")
 
-        # Fallback attempt: ask Gemini to reformat to valid JSON
+        # Async JSON repair fallback
         try:
             logger.warning("🔄 Attempting LLM JSON repair...")
-            repair_prompt = f"Fix this text to be valid JSON only:\n\n{text}"
-            repaired_text = asyncio.run(call_gemini(repair_prompt))
+            repair_prompt = f"Fix this text to be valid JSON only (no markdown, no explanations):\n\n{text}"
+            repaired_text = await call_gemini(repair_prompt)  # ✅ async-safe
             repaired_match = re.search(r"\{.*\}", repaired_text, re.DOTALL)
             if repaired_match:
-                return json.loads(repaired_match.group(0))
+                repaired_json = json.loads(repaired_match.group(0))
+                if isinstance(repaired_json, str):
+                    repaired_json = json.loads(repaired_json)
+                return repaired_json
         except Exception as repair_err:
             logger.error(f"⚠️ JSON repair failed: {repair_err}")
             raise
