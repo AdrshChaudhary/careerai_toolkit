@@ -63,6 +63,25 @@ else:
         logger.error(f"❌ Error configuring Gemini API: {str(e)}")
         print(f"❌ Error configuring Gemini API: {str(e)}")
 
+def ensure_string_values(data: dict) -> dict:
+    """Ensure all dict values are strings; convert lists/dicts/numbers to readable strings."""
+    for k, v in data.items():
+        if isinstance(v, list):
+            # Join list items into bullet points
+            data[k] = "\n".join(str(item) for item in v)
+        elif isinstance(v, dict):
+            # Flatten dict into "Key: value" lines
+            lines = []
+            for sub_k, sub_v in v.items():
+                if isinstance(sub_v, list):
+                    lines.append(f"{sub_k}: " + ", ".join(map(str, sub_v)))
+                else:
+                    lines.append(f"{sub_k}: {sub_v}")
+            data[k] = "\n".join(lines)
+        elif not isinstance(v, str):
+            data[k] = str(v)
+    return data
+
 async def extract_clean_json(text: str):
     """
     Extract and clean JSON from LLM responses, fixing common formatting issues.
@@ -517,7 +536,8 @@ async def analyze_resume_job_description(
         response_data = await extract_clean_json(response_text)
 
         # Ensure all required keys are present
-        response_data = ensure_all_keys(response_data, REQUIRED_KEYS_JOB)        
+        response_data = ensure_all_keys(response_data, REQUIRED_KEYS_JOB) 
+        response_data = ensure_string_values(response_data)       
         base_score = normalize_score(response_data["score"])
         boosted_score = (base_score * 0.85) + (keyword_score * 0.15)
         response_data["score"] = round(boosted_score, 2)
@@ -581,7 +601,7 @@ async def analyze_resume_comprehensive(resume: UploadFile = File(...)):
 
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_COMPREHENSIVE)
-        
+        response_data = ensure_string_values(response_data)
         response_data["score"] = normalize_score(response_data["score"])
         
         logger.info("✅ Comprehensive resume analysis completed successfully")
@@ -640,7 +660,7 @@ async def optimize_linkedin_profile(profile: UploadFile = File(...)):
         response_data = await extract_clean_json(response_text)
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_LINKEDIN)
-        
+        response_data = ensure_string_values(response_data)
         # Convert profileStrengthScore to float if it's a string
         response_data["profileStrengthScore"] = normalize_score(response_data["profileStrengthScore"])
 
@@ -754,6 +774,7 @@ async def analyze_github_profile(request: GitHubProfileRequest):
         # Get response from Gemini
         response_text = await call_gemini(prompt)
         response_data = await extract_clean_json(response_text)
+        response_data = ensure_string_values(response_data)
         response_data["languageDistribution"] = language_distribution_array
         response_data["languageDistributionChart"] = language_chart.strip()
         response_data["repositoryCreationActivity"] = activity_distribution_array
@@ -808,6 +829,7 @@ async def analyze_github_repository(request: GitHubRepoRequest):
         response_text = await call_gemini(prompt)
         response_data = await extract_clean_json(response_text)
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_REPO)
+        response_data = ensure_string_values(response_data)
         logger.info("✅ GitHub repository analysis completed successfully")
         return GitHubRepoResponse(**response_data)
     
