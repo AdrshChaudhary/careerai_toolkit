@@ -514,7 +514,7 @@ async def analyze_resume_job_description(
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = extract_clean_json(response_text)
+        response_data = await extract_clean_json(response_text)
 
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_JOB)        
@@ -577,7 +577,7 @@ async def analyze_resume_comprehensive(resume: UploadFile = File(...)):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = extract_clean_json(response_text)
+        response_data = await extract_clean_json(response_text)
 
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_COMPREHENSIVE)
@@ -637,7 +637,7 @@ async def optimize_linkedin_profile(profile: UploadFile = File(...)):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = extract_clean_json(response_text)
+        response_data = await extract_clean_json(response_text)
         # Ensure all required keys are present
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_LINKEDIN)
         
@@ -753,7 +753,7 @@ async def analyze_github_profile(request: GitHubProfileRequest):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = extract_clean_json(response_text)
+        response_data = await extract_clean_json(response_text)
         response_data["languageDistribution"] = language_distribution_array
         response_data["languageDistributionChart"] = language_chart.strip()
         response_data["repositoryCreationActivity"] = activity_distribution_array
@@ -806,7 +806,7 @@ async def analyze_github_repository(request: GitHubRepoRequest):
         
         # Get response from Gemini
         response_text = await call_gemini(prompt)
-        response_data = extract_clean_json(response_text)
+        response_data = await extract_clean_json(response_text)
         response_data = ensure_all_keys(response_data, REQUIRED_KEYS_REPO)
         logger.info("✅ GitHub repository analysis completed successfully")
         return GitHubRepoResponse(**response_data)
