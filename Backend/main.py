@@ -65,32 +65,46 @@ else:
 
 def extract_clean_json(text: str):
     """
-    Extracts and cleans JSON from LLM responses, removing markdown fences
-    and extra commentary.
+    Extract and clean JSON from LLM responses, fixing common formatting issues.
     """
     if not text:
         raise ValueError("Empty response from LLM")
 
-    # Remove leading/trailing whitespace
     text = text.strip()
-
-    # Remove markdown code fences (```json ... ```)
     text = re.sub(r"^```[a-zA-Z]*\n", "", text)
     text = re.sub(r"\n```$", "", text)
 
-    # Extract the first valid JSON object
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
         logger.error("❌ No JSON object found in LLM output")
         raise ValueError("No JSON object found in LLM output")
-    
+
     json_str = match.group(0)
+
+    # Common fixes
+    json_str = json_str.replace("\n", " ")            # Remove raw newlines
+    json_str = re.sub(r'(?<!\\)"', '\\"', json_str)   # Escape stray quotes
+    json_str = re.sub(r",\s*}", "}", json_str)        # Remove trailing commas in objects
+    json_str = re.sub(r",\s*]", "]", json_str)        # Remove trailing commas in arrays
 
     try:
         return json.loads(json_str)
     except json.JSONDecodeError as e:
-        logger.error(f"❌ JSON parsing failed: {e}")
+        logger.error(f"❌ JSON parsing failed after cleaning: {e}")
         logger.error(f"Problematic JSON string preview: {json_str[:500]}")
+
+        # Fallback attempt: ask Gemini to reformat to valid JSON
+        try:
+            logger.warning("🔄 Attempting LLM JSON repair...")
+            repair_prompt = f"Fix this text to be valid JSON only:\n\n{text}"
+            repaired_text = asyncio.run(call_gemini(repair_prompt))
+            repaired_match = re.search(r"\{.*\}", repaired_text, re.DOTALL)
+            if repaired_match:
+                return json.loads(repaired_match.group(0))
+        except Exception as repair_err:
+            logger.error(f"⚠️ JSON repair failed: {repair_err}")
+            raise
+
         raise
 
 # Pydantic models for request/response validation
