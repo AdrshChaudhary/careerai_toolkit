@@ -275,20 +275,36 @@ def parse_json_response(text: str) -> dict:
         raise HTTPException(status_code=500, detail="Failed to parse LLM response")
 
 async def fetch_github_user_repos(username: str) -> list:
-    """Fetch user repositories from GitHub API"""
+    """Fetch user repositories from GitHub API with optional authentication"""
     try:
         logger.info(f"🐙 Fetching GitHub repos for user: {username}")
+
+        headers = {"Accept": "application/vnd.github.v3+json"}
+        github_token = os.getenv("GITHUB_TOKEN")
+        if github_token:
+            headers["Authorization"] = f"token {github_token}"
+
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(
                 f"https://api.github.com/users/{username}/repos",
-                headers={"Accept": "application/vnd.github.v3+json"}
+                headers=headers
             )
+
+            if response.status_code == 403 and "rate limit" in response.text.lower():
+                logger.error("❌ GitHub API rate limit reached")
+                raise HTTPException(
+                    status_code=429,
+                    detail="GitHub API rate limit exceeded. Please try again later."
+                )
+
             if response.status_code == 404:
                 raise HTTPException(status_code=404, detail="GitHub user not found")
+
             response.raise_for_status()
             repos = response.json()
             logger.info(f"✅ Fetched {len(repos)} repositories")
             return repos
+
     except httpx.HTTPStatusError as e:
         logger.error(f"❌ GitHub API error: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch GitHub data")
